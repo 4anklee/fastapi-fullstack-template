@@ -1,0 +1,84 @@
+{
+    "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+    "assist": {
+        "actions": {
+            "source": {
+                "organizeImports": "on"
+            }
+        }
+    },
+    "files": {
+        "includes": [
+            "**",
+            "!**/dist",
+            "!**/node_modules",
+            "!**/src/route-tree.gen.ts",
+            "!**/playwright-report",
+            "!**/playwright.config.ts"
+        ]
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true,
+            "suspicious": {
+                "useIterableCallbackReturn": "warn",
+                "noExplicitAny": "error",
+                "noArrayIndexKey": "off"
+            },
+            "style": {
+                "noNonNullAssertion": "off",
+                "noParameterAssign": "warn",
+                "useSelfClosingElements": "error",
+                "noUselessElse": "error",
+                "useConsistentTypeDefinitions": {
+                    "options": { "style": "type" },
+                    "level": "warn"
+                },
+                "useImportType": "warn"
+            },
+            "nursery": {
+                "useSortedClasses": "warn",
+                "noFloatingPromises": "error"
+            },
+            "complexity": {
+                "useArrowFunction": "error"
+            }
+        },
+        "domains": {
+            "react": "recommended"
+        }
+    },
+    "formatter": {
+        "indentStyle": "space",
+        "indentWidth": 4
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "double",
+            "semicolons": "always"
+        }
+    },
+    "css": {
+        "parser": {
+            "tailwindDirectives": true
+        }
+    },
+    "overrides": [
+        {
+            "includes": ["**/src/client/**"],
+            "linter": {
+                "rules": {
+                    "style": {
+                        "useConsistentTypeDefinitions": "off",
+                        "noParameterAssign": "off"
+                    },
+                    "suspicious": {
+                        "noExplicitAny": "off",
+                        "useIterableCallbackReturn": "off"
+                    }
+                }
+            }
+        }
+    ]
+}

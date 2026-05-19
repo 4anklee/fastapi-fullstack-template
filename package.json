@@ -1,0 +1,11 @@
+{
+	"name": "handwriting-recognition",
+	"private": true,
+	"packageManager": "pnpm@11.1.3",
+	"scripts": {
+		"dev": "pnpm --filter frontend dev",
+		"lint": "pnpm --filter frontend lint",
+		"test": "pnpm --filter frontend test",
+		"test:ui": "pnpm --filter frontend test:ui"
+	}
+}
