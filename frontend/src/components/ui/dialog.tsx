@@ -1,11 +1,10 @@
-import { Modal } from "@heroui/react";
+import { cn, Modal } from "@heroui/react";
 import {
     type ComponentProps,
     cloneElement,
     type ReactElement,
     type ReactNode,
 } from "react";
-import { cn } from "@/lib/utils";
 
 export function Dialog({
     open,

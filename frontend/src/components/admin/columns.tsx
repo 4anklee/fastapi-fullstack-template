@@ -1,8 +1,6 @@
-import { Chip } from "@heroui/react";
-
+import { Chip, cn } from "@heroui/react";
 import type { UserPublic } from "@/client";
 import type { DataColumn } from "@/components/common/data-table";
-import { cn } from "@/lib/utils";
 import { UserActionsMenu } from "./user-actions-menu";
 
 export type UserTableData = UserPublic & {

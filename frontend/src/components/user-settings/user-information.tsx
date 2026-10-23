@@ -1,9 +1,9 @@
+import { cn } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import type { UserUpdateMe } from "@/client";
 import {
     usersReadMeQueryKey,
@@ -22,7 +22,6 @@ import { Input } from "@/components/ui/input";
 import { LoadingButton } from "@/components/ui/loading-button";
 import useAuth from "@/hooks/use-auth";
 import useCustomToast from "@/hooks/use-custom-toast";
-import { cn } from "@/lib/utils";
 import { handleError } from "@/utils";
 
 const formSchema = z.object({

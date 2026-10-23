@@ -1,4 +1,4 @@
-import { Label } from "@heroui/react";
+import { cn, Label } from "@heroui/react";
 import * as React from "react";
 import {
     Controller,
@@ -9,7 +9,6 @@ import {
     useFormContext,
     useFormState,
 } from "react-hook-form";
-import { cn } from "@/lib/utils";
 
 const Form = FormProvider;
 

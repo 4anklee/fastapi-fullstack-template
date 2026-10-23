@@ -1,10 +1,9 @@
 import { Check, Copy } from "@gravity-ui/icons";
-import { Tooltip } from "@heroui/react";
+import { cn, Tooltip } from "@heroui/react";
 import type { ItemPublic } from "@/client";
 import type { DataColumn } from "@/components/common/data-table";
 import { Button } from "@/components/ui/button";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
-import { cn } from "@/lib/utils";
 import { ItemActionsMenu } from "./item-actions-menu";
 
 function CopyId({ id }: { id: string }) {

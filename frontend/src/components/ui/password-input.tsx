@@ -1,7 +1,6 @@
 import { Eye, EyeSlash } from "@gravity-ui/icons";
-import { Input, Tooltip } from "@heroui/react";
+import { cn, Input, Tooltip } from "@heroui/react";
 import { type ComponentProps, useState } from "react";
-import { cn } from "@/lib/utils";
 import { Button } from "./button";
 
 export function PasswordInput({

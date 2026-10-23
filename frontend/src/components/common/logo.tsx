@@ -1,8 +1,7 @@
 import { Layers } from "@gravity-ui/icons";
+import { cn } from "@heroui/react";
 import { Link } from "@tanstack/react-router";
 import { APP_NAME } from "@/config";
-
-import { cn } from "@/lib/utils";
 
 type LogoProps = {
     variant?: "full" | "icon" | "responsive";

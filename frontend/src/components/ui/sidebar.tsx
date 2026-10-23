@@ -1,5 +1,5 @@
 import { LayoutColumns } from "@gravity-ui/icons";
-import { Drawer, Tooltip } from "@heroui/react";
+import { cn, Drawer, Tooltip } from "@heroui/react";
 import {
     type ComponentProps,
     cloneElement,
@@ -11,7 +11,6 @@ import {
     useState,
 } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
 import { Button } from "./button";
 
 type SidebarState = {
