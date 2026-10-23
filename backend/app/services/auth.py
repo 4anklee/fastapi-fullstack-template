@@ -1,5 +1,7 @@
+import logging
 from datetime import timedelta
 
+from aiosmtplib import SMTPException
 from fastapi import HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -14,6 +16,8 @@ from app.utils import (
     send_email,
     verify_password_reset_token,
 )
+
+logger = logging.getLogger(__name__)
 
 
 async def create_login_token(
@@ -41,14 +45,18 @@ async def recover_password(*, session: AsyncSession, email: str) -> Message:
     # Always return the same response to prevent email enumeration attacks.
     if user:
         password_reset_token = generate_password_reset_token(email=email)
-        email_data = generate_reset_password_email(
+        email_data = await generate_reset_password_email(
             email_to=user.email, email=email, token=password_reset_token
         )
-        send_email(
-            email_to=user.email,
-            subject=email_data.subject,
-            html_content=email_data.html_content,
-        )
+        try:
+            await send_email(
+                email_to=user.email,
+                subject=email_data.subject,
+                html_content=email_data.html_content,
+            )
+        except (SMTPException, OSError, TimeoutError):
+            # Keep the public response identical even if email delivery fails.
+            logger.exception("Password recovery email delivery failed")
 
     return Message(
         message="If that email is registered, we sent a password recovery link"
@@ -86,6 +94,6 @@ async def get_password_recovery_email(
         )
 
     password_reset_token = generate_password_reset_token(email=email)
-    return generate_reset_password_email(
+    return await generate_reset_password_email(
         email_to=user.email, email=email, token=password_reset_token
     )

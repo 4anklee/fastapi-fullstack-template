@@ -11,7 +11,7 @@ def custom_generate_unique_id(route: APIRoute) -> str:
     return f"{route.tags[0]}-{route.name}"
 
 
-def reject_api_fallback(request: Request) -> None:
+async def reject_api_fallback(request: Request) -> None:
     path = request.url.path
     if path == settings.API_V1_STR or path.startswith(f"{settings.API_V1_STR}/"):
         raise HTTPException(status_code=404, detail="Not Found")

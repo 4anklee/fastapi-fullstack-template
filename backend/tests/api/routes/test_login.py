@@ -1,6 +1,7 @@
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
+from aiosmtplib import SMTPException
 from fastapi.testclient import TestClient
 from pwdlib.hashers.bcrypt import BcryptHasher
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -53,8 +54,7 @@ async def test_recovery_password(
     client: TestClient, normal_user_token_headers: dict[str, str]
 ) -> None:
     with (
-        patch("app.core.config.settings.SMTP_HOST", "smtp.example.com"),
-        patch("app.core.config.settings.SMTP_USER", "admin@example.com"),
+        patch("app.services.auth.send_email", new_callable=AsyncMock) as send_email,
     ):
         email = "test@example.com"
         r = client.post(
@@ -65,6 +65,8 @@ async def test_recovery_password(
         assert r.json() == {
             "message": "If that email is registered, we sent a password recovery link"
         }
+        send_email.assert_awaited_once()
+        assert send_email.call_args.kwargs["email_to"] == email
 
 
 async def test_recovery_password_user_not_exits(
@@ -109,7 +111,7 @@ async def test_reset_password(client: TestClient, db: AsyncSession) -> None:
     assert r.json() == {"message": "Password updated successfully"}
 
     await db.refresh(user)
-    verified, _ = verify_password(new_password, user.hashed_password)
+    verified, _ = await verify_password(new_password, user.hashed_password)
     assert verified
 
 
@@ -159,7 +161,7 @@ async def test_login_with_bcrypt_password_upgrades_to_argon2(
     # Verify the hash was upgraded to argon2
     assert user.hashed_password.startswith("$argon2")
 
-    verified, updated_hash = verify_password(password, user.hashed_password)
+    verified, updated_hash = await verify_password(password, user.hashed_password)
     assert verified
     # Should not need another update since it's already argon2
     assert updated_hash is None
@@ -173,7 +175,7 @@ async def test_login_with_argon2_password_keeps_hash(
     password = random_lower_string()
 
     # Create an argon2 hash (current default)
-    argon2_hash = get_password_hash(password)
+    argon2_hash = await get_password_hash(password)
     assert argon2_hash.startswith("$argon2")
 
     # Create user with argon2 hash
@@ -194,3 +196,24 @@ async def test_login_with_argon2_password_keeps_hash(
 
     assert user.hashed_password == original_hash
     assert user.hashed_password.startswith("$argon2")
+
+
+async def test_recovery_does_not_reveal_account_on_email_failure(
+    client: TestClient, normal_user_token_headers: dict[str, str]
+) -> None:
+    with patch(
+        "app.services.auth.send_email",
+        new_callable=AsyncMock,
+        side_effect=SMTPException("SMTP unavailable"),
+    ) as send_email:
+        existing = client.post(
+            f"{settings.API_V1_STR}/password-recovery/{settings.EMAIL_TEST_USER}",
+            headers=normal_user_token_headers,
+        )
+        missing = client.post(
+            f"{settings.API_V1_STR}/password-recovery/{random_email()}",
+            headers=normal_user_token_headers,
+        )
+    send_email.assert_awaited_once()
+    assert existing.status_code == missing.status_code == 200
+    assert existing.json() == missing.json()

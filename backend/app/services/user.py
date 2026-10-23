@@ -42,7 +42,7 @@ async def list_users(
 async def create_user_record(*, session: AsyncSession, user_create: UserCreate) -> User:
     user = User.model_validate(
         user_create,
-        update={"hashed_password": get_password_hash(user_create.password)},
+        update={"hashed_password": await get_password_hash(user_create.password)},
     )
     session.add(user)
     await session.commit()
@@ -57,7 +57,7 @@ async def update_user_record(
     extra_data = {}
     if "password" in user_data:
         password = user_data["password"]
-        hashed_password = get_password_hash(password)
+        hashed_password = await get_password_hash(password)
         extra_data["hashed_password"] = hashed_password
     db_user.sqlmodel_update(user_data, update=extra_data)
     session.add(db_user)
@@ -79,10 +79,12 @@ async def authenticate_user(
     user = await get_user_by_email(session=session, email=email)
     if not user:
         # Keep timing similar whether or not the email exists.
-        verify_password(password, DUMMY_HASH)
+        await verify_password(password, DUMMY_HASH)
         return None
 
-    verified, updated_password_hash = verify_password(password, user.hashed_password)
+    verified, updated_password_hash = await verify_password(
+        password, user.hashed_password
+    )
     if not verified:
         return None
 
@@ -104,10 +106,10 @@ async def create_user(*, session: AsyncSession, user_in: UserCreate) -> User:
 
     user = await create_user_record(session=session, user_create=user_in)
     if settings.emails_enabled and user_in.email:
-        email_data = generate_new_account_email(
+        email_data = await generate_new_account_email(
             email_to=user_in.email, username=user_in.email, password=user_in.password
         )
-        send_email(
+        await send_email(
             email_to=user_in.email,
             subject=email_data.subject,
             html_content=email_data.html_content,
@@ -121,7 +123,7 @@ async def create_private_user(
     user = User(
         email=email,
         full_name=full_name,
-        hashed_password=get_password_hash(password),
+        hashed_password=await get_password_hash(password),
     )
 
     session.add(user)
@@ -151,7 +153,9 @@ async def update_current_user(
 async def update_current_user_password(
     *, session: AsyncSession, body: UpdatePassword, current_user: User
 ) -> Message:
-    verified, _ = verify_password(body.current_password, current_user.hashed_password)
+    verified, _ = await verify_password(
+        body.current_password, current_user.hashed_password
+    )
     if not verified:
         raise HTTPException(status_code=400, detail="Incorrect password")
     if body.current_password == body.new_password:
@@ -159,7 +163,7 @@ async def update_current_user_password(
             status_code=400, detail="New password cannot be the same as the current one"
         )
 
-    current_user.hashed_password = get_password_hash(body.new_password)
+    current_user.hashed_password = await get_password_hash(body.new_password)
     session.add(current_user)
     await session.commit()
     return Message(message="Password updated successfully")

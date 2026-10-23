@@ -1,5 +1,5 @@
 import uuid
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
@@ -42,7 +42,7 @@ async def test_create_user_new_email(
     client: TestClient, superuser_token_headers: dict[str, str], db: AsyncSession
 ) -> None:
     with (
-        patch("app.utils.send_email", return_value=None),
+        patch("app.services.user.send_email", new_callable=AsyncMock),
         patch("app.core.config.settings.SMTP_HOST", "smtp.example.com"),
         patch("app.core.config.settings.SMTP_USER", "admin@example.com"),
     ):
@@ -248,7 +248,7 @@ async def test_update_password_me(
     user_db = (await db.exec(user_query)).first()
     assert user_db
     assert user_db.email == settings.FIRST_SUPERUSER
-    verified, _ = verify_password(new_password, user_db.hashed_password)
+    verified, _ = await verify_password(new_password, user_db.hashed_password)
     assert verified
 
     # Revert to the old password to keep consistency in test
@@ -264,7 +264,7 @@ async def test_update_password_me(
     await db.refresh(user_db)
 
     assert r.status_code == 200
-    verified, _ = verify_password(
+    verified, _ = await verify_password(
         settings.FIRST_SUPERUSER_PASSWORD, user_db.hashed_password
     )
     assert verified
@@ -341,7 +341,7 @@ async def test_register_user(client: TestClient, db: AsyncSession) -> None:
     assert user_db
     assert user_db.email == username
     assert user_db.full_name == full_name
-    verified, _ = verify_password(password, user_db.hashed_password)
+    verified, _ = await verify_password(password, user_db.hashed_password)
     assert verified
 
 

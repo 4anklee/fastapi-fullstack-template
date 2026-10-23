@@ -29,7 +29,7 @@ async def login_access_token(
 
 
 @router.post("/login/test-token")
-def test_token(current_user: CurrentUser) -> User:
+async def test_token(current_user: CurrentUser) -> User:
     """
     Test access token
     """

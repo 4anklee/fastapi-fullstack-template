@@ -17,6 +17,18 @@ uv run fastapi dev app/main.py
 Configure your editor to use the root `.venv/bin/python`. Models live in
 `app/models/`, business logic in `app/services/`, and routes in `app/api/routes/`.
 
+## Async execution
+
+API handlers use async SQLModel sessions backed by psycopg 3's native async
+connections. Alembic also opens an async engine, using its `run_sync` bridge for
+the migration API. SMTP delivery uses `aiosmtplib`. Password hashing, verification,
+and email template file reads/rendering run in worker threads so they do not
+block the request event loop. Small in-memory helpers remain regular functions.
+
+Supabase supports this driver and asyncpg through a direct connection or the
+session pooler on port 5432. Switching drivers is not required for async I/O.
+See the [deployment guide](../deployment.md) for connection and TLS settings.
+
 ## Tests and lint
 
 From the repository root, with a separate local `app_test` database available:

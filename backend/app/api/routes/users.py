@@ -76,7 +76,7 @@ async def update_me_password(
 
 
 @router.get("/me")
-def read_me(current_user: CurrentUser) -> User:
+async def read_me(current_user: CurrentUser) -> User:
     """
     Get current user.
     """

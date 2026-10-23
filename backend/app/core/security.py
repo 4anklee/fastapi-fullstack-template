@@ -5,6 +5,7 @@ import jwt
 from pwdlib import PasswordHash
 from pwdlib.hashers.argon2 import Argon2Hasher
 from pwdlib.hashers.bcrypt import BcryptHasher
+from starlette.concurrency import run_in_threadpool
 
 from app.core.config import settings
 
@@ -26,11 +27,13 @@ def create_access_token(subject: str | Any, expires_delta: timedelta) -> str:
     return encoded_jwt
 
 
-def verify_password(
+async def verify_password(
     plain_password: str, hashed_password: str
 ) -> tuple[bool, str | None]:
-    return password_hash.verify_and_update(plain_password, hashed_password)
+    return await run_in_threadpool(
+        password_hash.verify_and_update, plain_password, hashed_password
+    )
 
 
-def get_password_hash(password: str) -> str:
-    return password_hash.hash(password)
+async def get_password_hash(password: str) -> str:
+    return await run_in_threadpool(password_hash.hash, password)
