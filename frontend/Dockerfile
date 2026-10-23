@@ -1,5 +1,5 @@
 # Stage 0, "build-stage", based on Node.js with pnpm, to build and compile the frontend
-FROM node:24-bookworm-slim AS build-stage
+FROM node:25-bookworm-slim AS build-stage
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
