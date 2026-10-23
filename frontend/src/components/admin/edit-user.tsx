@@ -1,33 +1,22 @@
-import { Checkbox, Label } from "@heroui/react";
+import {
+    Button,
+    Checkbox,
+    FieldError,
+    Input,
+    Label,
+    Modal,
+    TextField,
+} from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import type { UserPublic } from "@/client";
 import {
     usersListQueryKey,
     usersUpdateMutation,
 } from "@/client/@tanstack/react-query.gen";
-import { Button } from "@/components/ui/button";
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { LoadingButton } from "@/components/ui/loading-button";
+import { LoadingButton } from "@/components/common/loading-button";
 import useCustomToast from "@/hooks/use-custom-toast";
 import { handleError } from "@/utils";
 
@@ -101,154 +90,175 @@ const EditUser = ({ user, isOpen, setIsOpen }: EditUserProps) => {
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogContent className="sm:max-w-md">
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)}>
-                        <DialogHeader>
-                            <DialogTitle>Edit User</DialogTitle>
-                            <DialogDescription>
-                                Update the user details below.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                            <FormField
-                                control={form.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            Email{" "}
-                                            <span className="text-danger">
-                                                *
-                                            </span>
-                                        </FormLabel>
-                                        <FormControl>
+        <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+            <Modal.Backdrop>
+                <Modal.Container>
+                    <Modal.Dialog className="sm:max-w-md">
+                        <Modal.CloseTrigger />
+                        <form onSubmit={form.handleSubmit(onSubmit)}>
+                            <Modal.Header>
+                                <Modal.Heading>Edit User</Modal.Heading>
+                                <p className="text-muted text-sm">
+                                    Update the user details below.
+                                </p>
+                            </Modal.Header>
+                            <div className="grid gap-4 py-4">
+                                <Controller
+                                    control={form.control}
+                                    name="email"
+                                    render={({ field, fieldState }) => (
+                                        <TextField
+                                            isInvalid={fieldState.invalid}
+                                            validationBehavior="aria"
+                                        >
+                                            <Label>
+                                                Email{" "}
+                                                <span className="text-danger">
+                                                    *
+                                                </span>
+                                            </Label>
                                             <Input
                                                 placeholder="Email"
                                                 type="email"
                                                 {...field}
                                                 required
                                             />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                                            <FieldError>
+                                                {fieldState.error?.message}
+                                            </FieldError>
+                                        </TextField>
+                                    )}
+                                />
 
-                            <FormField
-                                control={form.control}
-                                name="full_name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Full Name</FormLabel>
-                                        <FormControl>
+                                <Controller
+                                    control={form.control}
+                                    name="full_name"
+                                    render={({ field, fieldState }) => (
+                                        <TextField
+                                            isInvalid={fieldState.invalid}
+                                            validationBehavior="aria"
+                                        >
+                                            <Label>Full Name</Label>
                                             <Input
                                                 placeholder="Full name"
                                                 type="text"
                                                 {...field}
                                             />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                                            <FieldError>
+                                                {fieldState.error?.message}
+                                            </FieldError>
+                                        </TextField>
+                                    )}
+                                />
 
-                            <FormField
-                                control={form.control}
-                                name="password"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Set Password</FormLabel>
-                                        <FormControl>
+                                <Controller
+                                    control={form.control}
+                                    name="password"
+                                    render={({ field, fieldState }) => (
+                                        <TextField
+                                            isInvalid={fieldState.invalid}
+                                            validationBehavior="aria"
+                                        >
+                                            <Label>Set Password</Label>
                                             <Input
                                                 placeholder="Password"
                                                 type="password"
                                                 {...field}
                                             />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                                            <FieldError>
+                                                {fieldState.error?.message}
+                                            </FieldError>
+                                        </TextField>
+                                    )}
+                                />
 
-                            <FormField
-                                control={form.control}
-                                name="confirm_password"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Confirm Password</FormLabel>
-                                        <FormControl>
+                                <Controller
+                                    control={form.control}
+                                    name="confirm_password"
+                                    render={({ field, fieldState }) => (
+                                        <TextField
+                                            isInvalid={fieldState.invalid}
+                                            validationBehavior="aria"
+                                        >
+                                            <Label>Confirm Password</Label>
                                             <Input
                                                 placeholder="Password"
                                                 type="password"
                                                 {...field}
                                             />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                                            <FieldError>
+                                                {fieldState.error?.message}
+                                            </FieldError>
+                                        </TextField>
+                                    )}
+                                />
 
-                            <FormField
-                                control={form.control}
-                                name="is_superuser"
-                                render={({ field }) => (
-                                    <FormItem className="flex items-center gap-3 space-y-0">
-                                        <Checkbox
-                                            isSelected={field.value}
-                                            onChange={field.onChange}
-                                            name={field.name}
-                                            onBlur={field.onBlur}
-                                        >
-                                            <Checkbox.Content>
-                                                <Checkbox.Control>
-                                                    <Checkbox.Indicator />
-                                                </Checkbox.Control>
-                                                <Label>Is superuser?</Label>
-                                            </Checkbox.Content>
-                                        </Checkbox>
-                                    </FormItem>
-                                )}
-                            />
+                                <Controller
+                                    control={form.control}
+                                    name="is_superuser"
+                                    render={({ field }) => (
+                                        <div className="flex items-center gap-3 space-y-0">
+                                            <Checkbox
+                                                isSelected={field.value}
+                                                onChange={field.onChange}
+                                                name={field.name}
+                                                onBlur={field.onBlur}
+                                            >
+                                                <Checkbox.Content>
+                                                    <Checkbox.Control>
+                                                        <Checkbox.Indicator />
+                                                    </Checkbox.Control>
+                                                    <Label>Is superuser?</Label>
+                                                </Checkbox.Content>
+                                            </Checkbox>
+                                        </div>
+                                    )}
+                                />
 
-                            <FormField
-                                control={form.control}
-                                name="is_active"
-                                render={({ field }) => (
-                                    <FormItem className="flex items-center gap-3 space-y-0">
-                                        <Checkbox
-                                            isSelected={field.value}
-                                            onChange={field.onChange}
-                                            name={field.name}
-                                            onBlur={field.onBlur}
-                                        >
-                                            <Checkbox.Content>
-                                                <Checkbox.Control>
-                                                    <Checkbox.Indicator />
-                                                </Checkbox.Control>
-                                                <Label>Is active?</Label>
-                                            </Checkbox.Content>
-                                        </Checkbox>
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
+                                <Controller
+                                    control={form.control}
+                                    name="is_active"
+                                    render={({ field }) => (
+                                        <div className="flex items-center gap-3 space-y-0">
+                                            <Checkbox
+                                                isSelected={field.value}
+                                                onChange={field.onChange}
+                                                name={field.name}
+                                                onBlur={field.onBlur}
+                                            >
+                                                <Checkbox.Content>
+                                                    <Checkbox.Control>
+                                                        <Checkbox.Indicator />
+                                                    </Checkbox.Control>
+                                                    <Label>Is active?</Label>
+                                                </Checkbox.Content>
+                                            </Checkbox>
+                                        </div>
+                                    )}
+                                />
+                            </div>
 
-                        <DialogFooter>
-                            <DialogClose asChild>
-                                <Button variant="outline" disabled={isPending}>
+                            <Modal.Footer>
+                                <Button
+                                    slot="close"
+                                    variant="outline"
+                                    isDisabled={isPending}
+                                >
                                     Cancel
                                 </Button>
-                            </DialogClose>
-                            <LoadingButton type="submit" loading={isPending}>
-                                Save
-                            </LoadingButton>
-                        </DialogFooter>
-                    </form>
-                </Form>
-            </DialogContent>
-        </Dialog>
+
+                                <LoadingButton
+                                    type="submit"
+                                    loading={isPending}
+                                >
+                                    Save
+                                </LoadingButton>
+                            </Modal.Footer>
+                        </form>
+                    </Modal.Dialog>
+                </Modal.Container>
+            </Modal.Backdrop>
+        </Modal>
     );
 };
 

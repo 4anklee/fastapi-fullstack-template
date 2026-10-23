@@ -1,19 +1,11 @@
+import { FieldError, Label, TextField } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-
 import { usersUpdateMePasswordMutation } from "@/client/@tanstack/react-query.gen";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { LoadingButton } from "@/components/ui/loading-button";
-import { PasswordInput } from "@/components/ui/password-input";
+import { LoadingButton } from "@/components/common/loading-button";
+import { PasswordInput } from "@/components/common/password-input";
 import useCustomToast from "@/hooks/use-custom-toast";
 import { handleError } from "@/utils";
 
@@ -67,77 +59,78 @@ const ChangePassword = () => {
     return (
         <div className="max-w-md">
             <h3 className="py-4 text-lg font-semibold">Change Password</h3>
-            <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="flex flex-col gap-4"
+            <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="flex flex-col gap-4"
+            >
+                <Controller
+                    control={form.control}
+                    name="current_password"
+                    render={({ field, fieldState }) => (
+                        <TextField
+                            isInvalid={fieldState.invalid}
+                            validationBehavior="aria"
+                        >
+                            <Label>Current Password</Label>
+                            <PasswordInput
+                                data-testid="current-password-input"
+                                placeholder="••••••••"
+                                aria-invalid={fieldState.invalid}
+                                {...field}
+                            />
+                            <FieldError>{fieldState.error?.message}</FieldError>
+                        </TextField>
+                    )}
+                />
+
+                <Controller
+                    control={form.control}
+                    name="new_password"
+                    render={({ field, fieldState }) => (
+                        <TextField
+                            isInvalid={fieldState.invalid}
+                            validationBehavior="aria"
+                        >
+                            <Label>New Password</Label>
+                            <PasswordInput
+                                data-testid="new-password-input"
+                                placeholder="••••••••"
+                                aria-invalid={fieldState.invalid}
+                                {...field}
+                            />
+                            <FieldError>{fieldState.error?.message}</FieldError>
+                        </TextField>
+                    )}
+                />
+
+                <Controller
+                    control={form.control}
+                    name="confirm_password"
+                    render={({ field, fieldState }) => (
+                        <TextField
+                            isInvalid={fieldState.invalid}
+                            validationBehavior="aria"
+                        >
+                            <Label>Confirm Password</Label>
+                            <PasswordInput
+                                data-testid="confirm-password-input"
+                                placeholder="••••••••"
+                                aria-invalid={fieldState.invalid}
+                                {...field}
+                            />
+                            <FieldError>{fieldState.error?.message}</FieldError>
+                        </TextField>
+                    )}
+                />
+
+                <LoadingButton
+                    type="submit"
+                    loading={isPending}
+                    className="self-start"
                 >
-                    <FormField
-                        control={form.control}
-                        name="current_password"
-                        render={({ field, fieldState }) => (
-                            <FormItem>
-                                <FormLabel>Current Password</FormLabel>
-                                <FormControl>
-                                    <PasswordInput
-                                        data-testid="current-password-input"
-                                        placeholder="••••••••"
-                                        aria-invalid={fieldState.invalid}
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="new_password"
-                        render={({ field, fieldState }) => (
-                            <FormItem>
-                                <FormLabel>New Password</FormLabel>
-                                <FormControl>
-                                    <PasswordInput
-                                        data-testid="new-password-input"
-                                        placeholder="••••••••"
-                                        aria-invalid={fieldState.invalid}
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="confirm_password"
-                        render={({ field, fieldState }) => (
-                            <FormItem>
-                                <FormLabel>Confirm Password</FormLabel>
-                                <FormControl>
-                                    <PasswordInput
-                                        data-testid="confirm-password-input"
-                                        placeholder="••••••••"
-                                        aria-invalid={fieldState.invalid}
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <LoadingButton
-                        type="submit"
-                        loading={isPending}
-                        className="self-start"
-                    >
-                        Update Password
-                    </LoadingButton>
-                </form>
-            </Form>
+                    Update Password
+                </LoadingButton>
+            </form>
         </div>
     );
 };

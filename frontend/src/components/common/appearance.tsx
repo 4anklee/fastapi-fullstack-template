@@ -1,37 +1,35 @@
 import { Display, Moon, Sun } from "@gravity-ui/icons";
-import { Dropdown, Label } from "@heroui/react";
+import { Button, Dropdown, Label } from "@heroui/react";
 import { type Theme, useTheme } from "@/components/theme-provider";
-import { Button } from "@/components/ui/button";
-import {
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-} from "@/components/ui/sidebar";
 
 const icons = { system: Display, light: Sun, dark: Moon };
-function ThemeMenu({ sidebar = false }: { sidebar?: boolean }) {
+export function Appearance({
+    sidebar = false,
+    collapsed = false,
+}: {
+    sidebar?: boolean;
+    collapsed?: boolean;
+}) {
     const { setTheme, theme } = useTheme();
     const Icon = icons[theme];
     return (
         <Dropdown>
-            {sidebar ? (
-                <SidebarMenuButton
-                    data-testid="theme-button"
-                    aria-label="Toggle theme"
-                >
-                    <Icon />
-                    <span>Appearance</span>
-                </SidebarMenuButton>
-            ) : (
-                <Button
-                    variant="outline"
-                    size="icon"
-                    data-testid="theme-button"
-                    aria-label="Toggle theme"
-                >
-                    <Icon />
-                </Button>
-            )}
+            <Button
+                variant={sidebar ? "ghost" : "outline"}
+                isIconOnly={!sidebar || collapsed}
+                className={
+                    sidebar
+                        ? collapsed
+                            ? "w-full"
+                            : "w-full justify-start gap-3"
+                        : undefined
+                }
+                data-testid="theme-button"
+                aria-label="Toggle theme"
+            >
+                <Icon />
+                {sidebar && !collapsed && <span>Appearance</span>}
+            </Button>
             <Dropdown.Popover placement={sidebar ? "top start" : "bottom end"}>
                 <Dropdown.Menu
                     aria-label="Appearance"
@@ -66,16 +64,4 @@ function ThemeMenu({ sidebar = false }: { sidebar?: boolean }) {
             </Dropdown.Popover>
         </Dropdown>
     );
-}
-export function SidebarAppearance() {
-    return (
-        <SidebarMenu>
-            <SidebarMenuItem>
-                <ThemeMenu sidebar />
-            </SidebarMenuItem>
-        </SidebarMenu>
-    );
-}
-export function Appearance() {
-    return <ThemeMenu />;
 }

@@ -51,8 +51,8 @@ as `typescript` (the official `@typescript/typescript6` compatibility package) b
 - `src/assets/`: static assets.
 - `src/client/`: generated API client.
 - `src/components/`: app components built with `@heroui/react`; icons come from
-  `@gravity-ui/icons`. The `ui/` folder contains shared form, button, modal, and
-  sidebar adapters.
+  `@gravity-ui/icons`. Pages use HeroUI directly; `common/` contains app-specific
+  helpers such as the responsive shell, loading buttons, and password inputs.
 - `src/index.css`: HeroUI styles and the app’s light/dark teal accent theme.
 - `src/hooks/`: custom hooks.
 - `src/routes/`: pages and route definitions.

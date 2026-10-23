@@ -1,35 +1,22 @@
 import { Plus } from "@gravity-ui/icons";
+import {
+    Button,
+    FieldError,
+    Input,
+    Label,
+    Modal,
+    TextField,
+} from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-
 import {
     itemsCreateMutation,
     itemsListQueryKey,
 } from "@/client/@tanstack/react-query.gen";
-import { Button } from "@/components/ui/button";
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { LoadingButton } from "@/components/ui/loading-button";
+import { LoadingButton } from "@/components/common/loading-button";
 import useCustomToast from "@/hooks/use-custom-toast";
 import { handleError } from "@/utils";
 
@@ -73,80 +60,93 @@ const AddItem = () => {
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-                <Button className="my-4">
-                    <Plus className="mr-2" />
-                    Add Item
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                    <DialogTitle>Add Item</DialogTitle>
-                    <DialogDescription>
-                        Fill in the details to add a new item.
-                    </DialogDescription>
-                </DialogHeader>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)}>
-                        <div className="grid gap-4 py-4">
-                            <FormField
-                                control={form.control}
-                                name="title"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            Title{" "}
-                                            <span className="text-danger">
-                                                *
-                                            </span>
-                                        </FormLabel>
-                                        <FormControl>
+        <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+            <Button className="my-4">
+                <Plus className="mr-2" />
+                Add Item
+            </Button>
+            <Modal.Backdrop>
+                <Modal.Container>
+                    <Modal.Dialog className="sm:max-w-md">
+                        <Modal.CloseTrigger />
+                        <Modal.Header>
+                            <Modal.Heading>Add Item</Modal.Heading>
+                            <p className="text-muted text-sm">
+                                Fill in the details to add a new item.
+                            </p>
+                        </Modal.Header>
+                        <form onSubmit={form.handleSubmit(onSubmit)}>
+                            <div className="grid gap-4 py-4">
+                                <Controller
+                                    control={form.control}
+                                    name="title"
+                                    render={({ field, fieldState }) => (
+                                        <TextField
+                                            isInvalid={fieldState.invalid}
+                                            validationBehavior="aria"
+                                        >
+                                            <Label>
+                                                Title{" "}
+                                                <span className="text-danger">
+                                                    *
+                                                </span>
+                                            </Label>
                                             <Input
                                                 placeholder="Title"
                                                 type="text"
                                                 {...field}
                                                 required
                                             />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                                            <FieldError>
+                                                {fieldState.error?.message}
+                                            </FieldError>
+                                        </TextField>
+                                    )}
+                                />
 
-                            <FormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Description</FormLabel>
-                                        <FormControl>
+                                <Controller
+                                    control={form.control}
+                                    name="description"
+                                    render={({ field, fieldState }) => (
+                                        <TextField
+                                            isInvalid={fieldState.invalid}
+                                            validationBehavior="aria"
+                                        >
+                                            <Label>Description</Label>
                                             <Input
                                                 placeholder="Description"
                                                 type="text"
                                                 {...field}
                                             />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
+                                            <FieldError>
+                                                {fieldState.error?.message}
+                                            </FieldError>
+                                        </TextField>
+                                    )}
+                                />
+                            </div>
 
-                        <DialogFooter>
-                            <DialogClose asChild>
-                                <Button variant="outline" disabled={isPending}>
+                            <Modal.Footer>
+                                <Button
+                                    slot="close"
+                                    variant="outline"
+                                    isDisabled={isPending}
+                                >
                                     Cancel
                                 </Button>
-                            </DialogClose>
-                            <LoadingButton type="submit" loading={isPending}>
-                                Save
-                            </LoadingButton>
-                        </DialogFooter>
-                    </form>
-                </Form>
-            </DialogContent>
-        </Dialog>
+
+                                <LoadingButton
+                                    type="submit"
+                                    loading={isPending}
+                                >
+                                    Save
+                                </LoadingButton>
+                            </Modal.Footer>
+                        </form>
+                    </Modal.Dialog>
+                </Modal.Container>
+            </Modal.Backdrop>
+        </Modal>
     );
 };
 

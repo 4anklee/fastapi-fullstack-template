@@ -1,8 +1,7 @@
 import { EllipsisVertical, Pencil, TrashBin } from "@gravity-ui/icons";
-import { Dropdown, Label } from "@heroui/react";
+import { Button, Dropdown, Label } from "@heroui/react";
 import { useState } from "react";
 import type { UserPublic } from "@/client";
-import { Button } from "@/components/ui/button";
 import useAuth from "@/hooks/use-auth";
 import DeleteUser from "./delete-user";
 import EditUser from "./edit-user";
@@ -14,7 +13,7 @@ export function UserActionsMenu({ user }: { user: UserPublic }) {
     return (
         <>
             <Dropdown>
-                <Button variant="ghost" size="icon" aria-label="User actions">
+                <Button variant="ghost" isIconOnly aria-label="User actions">
                     <EllipsisVertical />
                 </Button>
                 <Dropdown.Popover placement="bottom end">

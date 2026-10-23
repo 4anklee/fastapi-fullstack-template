@@ -1,8 +1,7 @@
 import { Check, Copy } from "@gravity-ui/icons";
-import { cn, Tooltip } from "@heroui/react";
+import { Button, cn, Tooltip } from "@heroui/react";
 import type { ItemPublic } from "@/client";
 import type { DataColumn } from "@/components/common/data-table";
-import { Button } from "@/components/ui/button";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { ItemActionsMenu } from "./item-actions-menu";
 
@@ -18,7 +17,7 @@ function CopyId({ id }: { id: string }) {
             <Tooltip>
                 <Button
                     variant="ghost"
-                    size="icon"
+                    isIconOnly
                     className="size-6 opacity-60 transition-opacity hover:opacity-100 focus-visible:opacity-100"
                     onPress={() => copy(id)}
                 >

@@ -1,25 +1,15 @@
-import { cn } from "@heroui/react";
+import { Button, cn, FieldError, Input, Label, TextField } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import type { UserUpdateMe } from "@/client";
 import {
     usersReadMeQueryKey,
     usersUpdateMeMutation,
 } from "@/client/@tanstack/react-query.gen";
-import { Button } from "@/components/ui/button";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { LoadingButton } from "@/components/ui/loading-button";
+import { LoadingButton } from "@/components/common/loading-button";
 import useAuth from "@/hooks/use-auth";
 import useCustomToast from "@/hooks/use-custom-toast";
 import { handleError } from "@/utils";
@@ -85,89 +75,93 @@ const UserInformation = () => {
     return (
         <div className="max-w-md">
             <h3 className="py-4 text-lg font-semibold">User Information</h3>
-            <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="flex flex-col gap-4"
-                >
-                    <FormField
-                        control={form.control}
-                        name="full_name"
-                        render={({ field }) =>
-                            editMode ? (
-                                <FormItem>
-                                    <FormLabel>Full name</FormLabel>
-                                    <FormControl>
-                                        <Input type="text" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            ) : (
-                                <FormItem>
-                                    <FormLabel>Full name</FormLabel>
-                                    <p
-                                        className={cn(
-                                            "max-w-sm truncate py-2",
-                                            !field.value && "text-muted",
-                                        )}
-                                    >
-                                        {field.value || "N/A"}
-                                    </p>
-                                </FormItem>
-                            )
-                        }
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) =>
-                            editMode ? (
-                                <FormItem>
-                                    <FormLabel>Email</FormLabel>
-                                    <FormControl>
-                                        <Input type="email" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            ) : (
-                                <FormItem>
-                                    <FormLabel>Email</FormLabel>
-                                    <p className="max-w-sm truncate py-2">
-                                        {field.value}
-                                    </p>
-                                </FormItem>
-                            )
-                        }
-                    />
-
-                    <div className="flex gap-3">
-                        {editMode ? (
-                            <>
-                                <LoadingButton
-                                    type="submit"
-                                    loading={isPending}
-                                    disabled={!form.formState.isDirty}
-                                >
-                                    Save
-                                </LoadingButton>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onPress={onCancel}
-                                    disabled={isPending}
-                                >
-                                    Cancel
-                                </Button>
-                            </>
+            <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="flex flex-col gap-4"
+            >
+                <Controller
+                    control={form.control}
+                    name="full_name"
+                    render={({ field, fieldState }) =>
+                        editMode ? (
+                            <TextField
+                                isInvalid={fieldState.invalid}
+                                validationBehavior="aria"
+                            >
+                                <Label>Full name</Label>
+                                <Input type="text" {...field} />
+                                <FieldError>
+                                    {fieldState.error?.message}
+                                </FieldError>
+                            </TextField>
                         ) : (
-                            <Button type="button" onPress={toggleEditMode}>
-                                Edit
+                            <div className="grid gap-2">
+                                <p className="text-sm font-medium">Full name</p>
+                                <p
+                                    className={cn(
+                                        "max-w-sm truncate py-2",
+                                        !field.value && "text-muted",
+                                    )}
+                                >
+                                    {field.value || "N/A"}
+                                </p>
+                            </div>
+                        )
+                    }
+                />
+
+                <Controller
+                    control={form.control}
+                    name="email"
+                    render={({ field, fieldState }) =>
+                        editMode ? (
+                            <TextField
+                                isInvalid={fieldState.invalid}
+                                validationBehavior="aria"
+                            >
+                                <Label>Email</Label>
+                                <Input type="email" {...field} />
+                                <FieldError>
+                                    {fieldState.error?.message}
+                                </FieldError>
+                            </TextField>
+                        ) : (
+                            <div className="grid gap-2">
+                                <p className="text-sm font-medium">Email</p>
+                                <p className="max-w-sm truncate py-2">
+                                    {field.value}
+                                </p>
+                            </div>
+                        )
+                    }
+                />
+
+                <div className="flex gap-3">
+                    {editMode ? (
+                        <>
+                            <LoadingButton
+                                type="submit"
+                                loading={isPending}
+                                isDisabled={!form.formState.isDirty}
+                            >
+                                Save
+                            </LoadingButton>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onPress={onCancel}
+                                isDisabled={isPending}
+                            >
+                                Cancel
                             </Button>
-                        )}
-                    </div>
-                </form>
-            </Form>
+                        </>
+                    ) : (
+                        <Button type="button" onPress={toggleEditMode}>
+                            Edit
+                        </Button>
+                    )}
+                </div>
+            </form>
         </div>
     );
 };

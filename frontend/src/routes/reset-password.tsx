@@ -1,3 +1,4 @@
+import { FieldError, Label, TextField } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -6,20 +7,12 @@ import {
     redirect,
     useNavigate,
 } from "@tanstack/react-router";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { loginResetMutation } from "@/client/@tanstack/react-query.gen";
 import { AuthLayout } from "@/components/common/auth-layout";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { LoadingButton } from "@/components/ui/loading-button";
-import { PasswordInput } from "@/components/ui/password-input";
+import { LoadingButton } from "@/components/common/loading-button";
+import { PasswordInput } from "@/components/common/password-input";
 import { APP_NAME } from "@/config";
 import { isLoggedIn } from "@/hooks/use-auth";
 import useCustomToast from "@/hooks/use-custom-toast";
@@ -97,72 +90,76 @@ function ResetPassword() {
 
     return (
         <AuthLayout>
-            <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="flex flex-col gap-6"
-                >
-                    <div className="flex flex-col items-center gap-2 text-center">
-                        <h1 className="text-2xl font-bold">Reset Password</h1>
-                    </div>
+            <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="flex flex-col gap-6"
+            >
+                <div className="flex flex-col items-center gap-2 text-center">
+                    <h1 className="text-2xl font-bold">Reset Password</h1>
+                </div>
 
-                    <div className="grid gap-4">
-                        <FormField
-                            control={form.control}
-                            name="new_password"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>New Password</FormLabel>
-                                    <FormControl>
-                                        <PasswordInput
-                                            data-testid="new-password-input"
-                                            placeholder="New Password"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                <div className="grid gap-4">
+                    <Controller
+                        control={form.control}
+                        name="new_password"
+                        render={({ field, fieldState }) => (
+                            <TextField
+                                isInvalid={fieldState.invalid}
+                                validationBehavior="aria"
+                            >
+                                <Label>New Password</Label>
+                                <PasswordInput
+                                    data-testid="new-password-input"
+                                    placeholder="New Password"
+                                    {...field}
+                                />
+                                <FieldError>
+                                    {fieldState.error?.message}
+                                </FieldError>
+                            </TextField>
+                        )}
+                    />
 
-                        <FormField
-                            control={form.control}
-                            name="confirm_password"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Confirm Password</FormLabel>
-                                    <FormControl>
-                                        <PasswordInput
-                                            data-testid="confirm-password-input"
-                                            placeholder="Confirm Password"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                    <Controller
+                        control={form.control}
+                        name="confirm_password"
+                        render={({ field, fieldState }) => (
+                            <TextField
+                                isInvalid={fieldState.invalid}
+                                validationBehavior="aria"
+                            >
+                                <Label>Confirm Password</Label>
+                                <PasswordInput
+                                    data-testid="confirm-password-input"
+                                    placeholder="Confirm Password"
+                                    {...field}
+                                />
+                                <FieldError>
+                                    {fieldState.error?.message}
+                                </FieldError>
+                            </TextField>
+                        )}
+                    />
 
-                        <LoadingButton
-                            type="submit"
-                            className="w-full"
-                            loading={isPending}
-                        >
-                            Reset Password
-                        </LoadingButton>
-                    </div>
+                    <LoadingButton
+                        type="submit"
+                        className="w-full"
+                        loading={isPending}
+                    >
+                        Reset Password
+                    </LoadingButton>
+                </div>
 
-                    <div className="text-center text-sm">
-                        Remember your password?{" "}
-                        <RouterLink
-                            to="/login"
-                            className="underline underline-offset-4"
-                        >
-                            Log in
-                        </RouterLink>
-                    </div>
-                </form>
-            </Form>
+                <div className="text-center text-sm">
+                    Remember your password?{" "}
+                    <RouterLink
+                        to="/login"
+                        className="underline underline-offset-4"
+                    >
+                        Log in
+                    </RouterLink>
+                </div>
+            </form>
         </AuthLayout>
     );
 }

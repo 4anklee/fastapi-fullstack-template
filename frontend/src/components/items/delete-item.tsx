@@ -1,21 +1,11 @@
+import { Button, Modal } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-
 import {
     itemsDeleteMutation,
     itemsListQueryKey,
 } from "@/client/@tanstack/react-query.gen";
-import { Button } from "@/components/ui/button";
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import { LoadingButton } from "@/components/ui/loading-button";
+import { LoadingButton } from "@/components/common/loading-button";
 import useCustomToast from "@/hooks/use-custom-toast";
 import { handleError } from "@/utils";
 
@@ -47,34 +37,43 @@ const DeleteItem = ({ id, isOpen, setIsOpen }: DeleteItemProps) => {
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogContent className="sm:max-w-md">
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <DialogHeader>
-                        <DialogTitle>Delete Item</DialogTitle>
-                        <DialogDescription>
-                            This item will be permanently deleted. Are you sure?
-                            You will not be able to undo this action.
-                        </DialogDescription>
-                    </DialogHeader>
+        <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+            <Modal.Backdrop>
+                <Modal.Container>
+                    <Modal.Dialog className="sm:max-w-md">
+                        <Modal.CloseTrigger />
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            <Modal.Header>
+                                <Modal.Heading>Delete Item</Modal.Heading>
+                                <p className="text-muted text-sm">
+                                    This item will be permanently deleted. Are
+                                    you sure? You will not be able to undo this
+                                    action.
+                                </p>
+                            </Modal.Header>
 
-                    <DialogFooter className="mt-4">
-                        <DialogClose asChild>
-                            <Button variant="outline" disabled={isPending}>
-                                Cancel
-                            </Button>
-                        </DialogClose>
-                        <LoadingButton
-                            variant="destructive"
-                            type="submit"
-                            loading={isPending}
-                        >
-                            Delete
-                        </LoadingButton>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+                            <Modal.Footer className="mt-4">
+                                <Button
+                                    slot="close"
+                                    variant="outline"
+                                    isDisabled={isPending}
+                                >
+                                    Cancel
+                                </Button>
+
+                                <LoadingButton
+                                    variant="danger"
+                                    type="submit"
+                                    loading={isPending}
+                                >
+                                    Delete
+                                </LoadingButton>
+                            </Modal.Footer>
+                        </form>
+                    </Modal.Dialog>
+                </Modal.Container>
+            </Modal.Backdrop>
+        </Modal>
     );
 };
 

@@ -1,10 +1,9 @@
-import { Spinner } from "@heroui/react";
+import { Button, Spinner } from "@heroui/react";
 import type { ComponentProps } from "react";
-import { Button } from "./button";
 
 export function LoadingButton({
     loading = false,
-    disabled,
+    isDisabled,
     children,
     ...props
 }: Omit<ComponentProps<typeof Button>, "children"> & {
@@ -12,7 +11,11 @@ export function LoadingButton({
     children?: React.ReactNode;
 }) {
     return (
-        <Button {...props} disabled={disabled || loading} isPending={loading}>
+        <Button
+            {...props}
+            isDisabled={isDisabled || loading}
+            isPending={loading}
+        >
             {loading && <Spinner size="sm" color="current" />}
             {children}
         </Button>

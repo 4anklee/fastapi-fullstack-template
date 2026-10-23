@@ -4,9 +4,8 @@ import {
     ChevronsLeft,
     ChevronsRight,
 } from "@gravity-ui/icons";
-import { Label, ListBox, Select, Table, Tooltip } from "@heroui/react";
+import { Button, Label, ListBox, Select, Table, Tooltip } from "@heroui/react";
 import { type ReactNode, useState } from "react";
-import { Button } from "@/components/ui/button";
 
 export type DataColumn<T> = {
     id: string;
@@ -130,9 +129,10 @@ export function DataTable<T extends { id: string }>({
                             <Tooltip key={control.label}>
                                 <Button
                                     variant="outline"
-                                    size="icon-sm"
+                                    isIconOnly
+                                    size="sm"
                                     aria-label={control.label}
-                                    disabled={control.disabled}
+                                    isDisabled={control.disabled}
                                     onPress={() => setPageIndex(control.target)}
                                 >
                                     <control.icon />

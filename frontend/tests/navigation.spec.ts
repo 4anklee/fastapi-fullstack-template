@@ -75,3 +75,36 @@ test.describe("Table pagination", () => {
         ).toBeDisabled();
     });
 });
+
+test("Collapsed desktop navigation remains usable and supports the keyboard shortcut", async ({
+    page,
+}) => {
+    await page.goto("/");
+    const toggle = page.getByRole("button", { name: "Toggle sidebar" });
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await page.getByRole("link", { name: "Items", exact: true }).click();
+    await expect(page).toHaveURL(/\/items$/);
+    await page.getByTestId("user-menu").click();
+    await page.getByRole("menuitem", { name: "User Settings" }).click();
+    await expect(page).toHaveURL(/\/settings$/);
+    await page.keyboard.press("Control+b");
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+});
+
+test("Mobile account menu closes the drawer when opening settings", async ({
+    page,
+}) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.getByRole("button", { name: "Toggle sidebar" }).click();
+    await page.getByTestId("user-menu").click();
+    await page.getByRole("menuitem", { name: "User Settings" }).click();
+    await expect(page).toHaveURL(/\/settings$/);
+    await expect(
+        page.getByRole("dialog", { name: "Navigation" }),
+    ).not.toBeVisible();
+    await expect(
+        page.getByRole("heading", { name: "User Settings" }),
+    ).toBeVisible();
+});

@@ -1,8 +1,7 @@
 import { EllipsisVertical, Pencil, TrashBin } from "@gravity-ui/icons";
-import { Dropdown, Label } from "@heroui/react";
+import { Button, Dropdown, Label } from "@heroui/react";
 import { useState } from "react";
 import type { ItemPublic } from "@/client";
-import { Button } from "@/components/ui/button";
 import DeleteItem from "./delete-item";
 import EditItem from "./edit-item";
 
@@ -12,7 +11,7 @@ export function ItemActionsMenu({ item }: { item: ItemPublic }) {
     return (
         <>
             <Dropdown>
-                <Button variant="ghost" size="icon" aria-label="Item actions">
+                <Button variant="ghost" isIconOnly aria-label="Item actions">
                     <EllipsisVertical />
                 </Button>
                 <Dropdown.Popover placement="bottom end">

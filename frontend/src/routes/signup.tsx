@@ -1,23 +1,15 @@
+import { FieldError, Input, Label, TextField } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
     createFileRoute,
     Link as RouterLink,
     redirect,
 } from "@tanstack/react-router";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { AuthLayout } from "@/components/common/auth-layout";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { LoadingButton } from "@/components/ui/loading-button";
-import { PasswordInput } from "@/components/ui/password-input";
+import { LoadingButton } from "@/components/common/loading-button";
+import { PasswordInput } from "@/components/common/password-input";
 import { APP_NAME } from "@/config";
 import useAuth, { isLoggedIn } from "@/hooks/use-auth";
 
@@ -82,112 +74,120 @@ function SignUp() {
 
     return (
         <AuthLayout>
-            <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="flex flex-col gap-6"
-                >
-                    <div className="flex flex-col items-center gap-2 text-center">
-                        <h1 className="text-2xl font-bold">
-                            Create an account
-                        </h1>
-                    </div>
+            <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="flex flex-col gap-6"
+            >
+                <div className="flex flex-col items-center gap-2 text-center">
+                    <h1 className="text-2xl font-bold">Create an account</h1>
+                </div>
 
-                    <div className="grid gap-4">
-                        <FormField
-                            control={form.control}
-                            name="full_name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Full Name</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            data-testid="full-name-input"
-                                            placeholder="User"
-                                            type="text"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                <div className="grid gap-4">
+                    <Controller
+                        control={form.control}
+                        name="full_name"
+                        render={({ field, fieldState }) => (
+                            <TextField
+                                isInvalid={fieldState.invalid}
+                                validationBehavior="aria"
+                            >
+                                <Label>Full Name</Label>
+                                <Input
+                                    data-testid="full-name-input"
+                                    placeholder="User"
+                                    type="text"
+                                    {...field}
+                                />
+                                <FieldError>
+                                    {fieldState.error?.message}
+                                </FieldError>
+                            </TextField>
+                        )}
+                    />
 
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Email</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            data-testid="email-input"
-                                            placeholder="user@example.com"
-                                            type="email"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                    <Controller
+                        control={form.control}
+                        name="email"
+                        render={({ field, fieldState }) => (
+                            <TextField
+                                isInvalid={fieldState.invalid}
+                                validationBehavior="aria"
+                            >
+                                <Label>Email</Label>
+                                <Input
+                                    data-testid="email-input"
+                                    placeholder="user@example.com"
+                                    type="email"
+                                    {...field}
+                                />
+                                <FieldError>
+                                    {fieldState.error?.message}
+                                </FieldError>
+                            </TextField>
+                        )}
+                    />
 
-                        <FormField
-                            control={form.control}
-                            name="password"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Password</FormLabel>
-                                    <FormControl>
-                                        <PasswordInput
-                                            data-testid="password-input"
-                                            placeholder="Password"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                    <Controller
+                        control={form.control}
+                        name="password"
+                        render={({ field, fieldState }) => (
+                            <TextField
+                                isInvalid={fieldState.invalid}
+                                validationBehavior="aria"
+                            >
+                                <Label>Password</Label>
+                                <PasswordInput
+                                    data-testid="password-input"
+                                    placeholder="Password"
+                                    {...field}
+                                />
+                                <FieldError>
+                                    {fieldState.error?.message}
+                                </FieldError>
+                            </TextField>
+                        )}
+                    />
 
-                        <FormField
-                            control={form.control}
-                            name="confirm_password"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Confirm Password</FormLabel>
-                                    <FormControl>
-                                        <PasswordInput
-                                            data-testid="confirm-password-input"
-                                            placeholder="Confirm Password"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                    <Controller
+                        control={form.control}
+                        name="confirm_password"
+                        render={({ field, fieldState }) => (
+                            <TextField
+                                isInvalid={fieldState.invalid}
+                                validationBehavior="aria"
+                            >
+                                <Label>Confirm Password</Label>
+                                <PasswordInput
+                                    data-testid="confirm-password-input"
+                                    placeholder="Confirm Password"
+                                    {...field}
+                                />
+                                <FieldError>
+                                    {fieldState.error?.message}
+                                </FieldError>
+                            </TextField>
+                        )}
+                    />
 
-                        <LoadingButton
-                            type="submit"
-                            className="w-full"
-                            loading={isSigningUp}
-                        >
-                            Sign Up
-                        </LoadingButton>
-                    </div>
+                    <LoadingButton
+                        type="submit"
+                        className="w-full"
+                        loading={isSigningUp}
+                    >
+                        Sign Up
+                    </LoadingButton>
+                </div>
 
-                    <div className="text-center text-sm">
-                        Already have an account?{" "}
-                        <RouterLink
-                            to="/login"
-                            className="underline underline-offset-4"
-                        >
-                            Log in
-                        </RouterLink>
-                    </div>
-                </form>
-            </Form>
+                <div className="text-center text-sm">
+                    Already have an account?{" "}
+                    <RouterLink
+                        to="/login"
+                        className="underline underline-offset-4"
+                    >
+                        Log in
+                    </RouterLink>
+                </div>
+            </form>
         </AuthLayout>
     );
 }
