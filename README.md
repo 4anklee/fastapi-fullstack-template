@@ -11,8 +11,8 @@ user administration, password recovery, and an example items workflow.
 - **Development:** run FastAPI and Vite locally against your local PostgreSQL
   database. Vite proxies `/api` to FastAPI on port 8000.
 - **Backend:** SQLModel, Pydantic, Alembic, Pytest, ty, and Ruff.
-- **Frontend:** TypeScript, TanStack Router and Query, Tailwind CSS, shadcn/ui,
-  Playwright, and Biome.
+- **Frontend:** TypeScript, TanStack Router and Query, Tailwind CSS, HeroUI,
+  Gravity UI icons, Playwright, and Biome.
 - **CI:** backend tests, browser tests, and a combined Docker image smoke test.
   Dependabot checks backend and frontend dependencies daily.
 
@@ -79,9 +79,10 @@ the frontend automatically.
 ## Make it your own
 
 1. Set the project name and administrator credentials in your environment.
-2. Update the package name in `package.json`, the title in `frontend/index.html`,
-   and branding in `frontend/src/components/common/` and `frontend/src/routes/`.
-   Some files still use **Handwriting Recognition** as example branding.
+2. Set `APP_NAME` and `APP_DESCRIPTION` in `frontend/src/config.ts` to customize
+   the app branding and page titles. Update the initial title in
+   `frontend/index.html`, the logo in `frontend/src/components/common/logo.tsx`,
+   and the package name in the root `package.json`.
 3. Adapt backend models in `backend/app/models/`, services in
    `backend/app/services/`, and endpoints in `backend/app/api/routes/`.
 4. Create Alembic migrations for database changes and regenerate the TypeScript

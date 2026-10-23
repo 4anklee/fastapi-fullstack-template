@@ -1,15 +1,7 @@
-import { Link as RouterLink } from "@tanstack/react-router";
-import { ChevronsUpDown, LogOut, Settings } from "lucide-react";
+import { ArrowRightFromSquare, Gear } from "@gravity-ui/icons";
+import { Avatar, Dropdown, Label } from "@heroui/react";
+import { useNavigate } from "@tanstack/react-router";
 import type { UserPublic } from "@/client";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
     SidebarMenu,
     SidebarMenuButton,
@@ -19,88 +11,61 @@ import {
 import useAuth from "@/hooks/use-auth";
 import { getInitials } from "@/utils";
 
-type UserInfoProps = {
-    fullName?: string;
-    email?: string;
-};
-
-function UserInfo({ fullName, email }: UserInfoProps) {
-    return (
-        <div className="flex w-full min-w-0 items-center gap-2.5">
-            <Avatar className="size-8">
-                <AvatarFallback className="bg-zinc-600 text-white">
-                    {getInitials(fullName || "User")}
-                </AvatarFallback>
-            </Avatar>
-            <div className="flex min-w-0 flex-col items-start">
-                <p className="w-full truncate font-medium text-sm">
-                    {fullName}
-                </p>
-                <p className="w-full truncate text-muted-foreground text-xs">
-                    {email}
-                </p>
-            </div>
-        </div>
-    );
-}
-
 export function User({ user }: { user?: UserPublic }) {
     const { logout } = useAuth();
-    const { isMobile, setOpenMobile } = useSidebar();
-
+    const { setOpenMobile } = useSidebar();
+    const navigate = useNavigate();
     if (!user) return null;
-
-    const handleMenuClick = () => {
-        if (isMobile) {
-            setOpenMobile(false);
-        }
-    };
-    const handleLogout = async () => {
-        logout();
-    };
-
     return (
         <SidebarMenu>
             <SidebarMenuItem>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <SidebarMenuButton
-                            size="lg"
-                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                            data-testid="user-menu"
-                        >
-                            <UserInfo
-                                fullName={user?.full_name ?? ""}
-                                email={user?.email}
-                            />
-                            <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
-                        </SidebarMenuButton>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-                        side={isMobile ? "bottom" : "right"}
-                        align="end"
-                        sideOffset={4}
+                <Dropdown>
+                    <SidebarMenuButton
+                        size="lg"
+                        data-testid="user-menu"
+                        aria-label="User menu"
                     >
-                        <DropdownMenuLabel className="p-0 font-normal">
-                            <UserInfo
-                                fullName={user?.full_name ?? ""}
-                                email={user?.email}
-                            />
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <RouterLink to="/settings" onClick={handleMenuClick}>
-                            <DropdownMenuItem>
-                                <Settings />
-                                User Settings
-                            </DropdownMenuItem>
-                        </RouterLink>
-                        <DropdownMenuItem onClick={handleLogout}>
-                            <LogOut />
-                            Log Out
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                        <Avatar size="sm" className="shrink-0">
+                            <Avatar.Fallback>
+                                {getInitials(user.full_name || "User")}
+                            </Avatar.Fallback>
+                        </Avatar>
+                        <span className="min-w-0 text-left">
+                            <span className="block truncate font-medium">
+                                {user.full_name || "My account"}
+                            </span>
+                            <span className="text-muted block truncate text-xs">
+                                {user.email}
+                            </span>
+                        </span>
+                    </SidebarMenuButton>
+                    <Dropdown.Popover
+                        placement="top start"
+                        className="min-w-56"
+                    >
+                        <Dropdown.Menu aria-label="Account">
+                            <Dropdown.Item
+                                id="settings"
+                                textValue="User Settings"
+                                onAction={() => {
+                                    setOpenMobile(false);
+                                    return navigate({ to: "/settings" });
+                                }}
+                            >
+                                <Gear />
+                                <Label>User Settings</Label>
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                                id="logout"
+                                textValue="Log Out"
+                                onAction={logout}
+                            >
+                                <ArrowRightFromSquare />
+                                <Label>Log Out</Label>
+                            </Dropdown.Item>
+                        </Dropdown.Menu>
+                    </Dropdown.Popover>
+                </Dropdown>
             </SidebarMenuItem>
         </SidebarMenu>
     );

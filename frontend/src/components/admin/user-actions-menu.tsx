@@ -1,40 +1,54 @@
-import { EllipsisVertical } from "lucide-react";
+import { EllipsisVertical, Pencil, TrashBin } from "@gravity-ui/icons";
+import { Dropdown, Label } from "@heroui/react";
 import { useState } from "react";
-
 import type { UserPublic } from "@/client";
 import { Button } from "@/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import useAuth from "@/hooks/use-auth";
 import DeleteUser from "./delete-user";
 import EditUser from "./edit-user";
 
-type UserActionsMenuProps = {
-    user: UserPublic;
-};
-
-export const UserActionsMenu = ({ user }: UserActionsMenuProps) => {
-    const [open, setOpen] = useState(false);
+export function UserActionsMenu({ user }: { user: UserPublic }) {
+    const [action, setAction] = useState<"edit" | "delete" | null>(null);
     const { user: currentUser } = useAuth();
-
-    if (user.id === currentUser?.id) {
-        return null;
-    }
-
+    if (user.id === currentUser?.id) return null;
     return (
-        <DropdownMenu open={open} onOpenChange={setOpen}>
-            <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+        <>
+            <Dropdown>
+                <Button variant="ghost" size="icon" aria-label="User actions">
                     <EllipsisVertical />
                 </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <EditUser user={user} onSuccess={() => setOpen(false)} />
-                <DeleteUser id={user.id} onSuccess={() => setOpen(false)} />
-            </DropdownMenuContent>
-        </DropdownMenu>
+                <Dropdown.Popover placement="bottom end">
+                    <Dropdown.Menu aria-label="User actions">
+                        <Dropdown.Item
+                            id="edit"
+                            textValue="Edit User"
+                            onAction={() => setAction("edit")}
+                        >
+                            <Pencil />
+                            <Label>Edit User</Label>
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                            id="delete"
+                            textValue="Delete User"
+                            variant="danger"
+                            onAction={() => setAction("delete")}
+                        >
+                            <TrashBin />
+                            <Label>Delete User</Label>
+                        </Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown.Popover>
+            </Dropdown>
+            <EditUser
+                user={user}
+                isOpen={action === "edit"}
+                setIsOpen={(open) => setAction(open ? "edit" : null)}
+            />
+            <DeleteUser
+                id={user.id}
+                isOpen={action === "delete"}
+                setIsOpen={(open) => setAction(open ? "delete" : null)}
+            />
+        </>
     );
-};
+}

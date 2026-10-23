@@ -1,5 +1,5 @@
+import type { House } from "@gravity-ui/icons";
 import { Link as RouterLink, useRouterState } from "@tanstack/react-router";
-import type { LucideIcon } from "lucide-react";
 
 import {
     SidebarGroup,
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/sidebar";
 
 export type Item = {
-    icon: LucideIcon;
+    icon: typeof House;
     title: string;
     path: string;
 };

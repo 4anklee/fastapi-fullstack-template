@@ -1,3 +1,4 @@
+import { Toast } from "@heroui/react";
 import {
     MutationCache,
     QueryCache,
@@ -9,7 +10,6 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { client } from "./client/client.gen";
 import { ThemeProvider } from "./components/theme-provider";
-import { Toaster } from "./components/ui/sonner";
 import "./index.css";
 import { routeTree } from "./route-tree.gen";
 import { ApiError } from "./utils";
@@ -55,7 +55,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
             <QueryClientProvider client={queryClient}>
                 <RouterProvider router={router} />
-                <Toaster richColors closeButton />
+                <Toast.Provider placement="bottom end" />
             </QueryClientProvider>
         </ThemeProvider>
     </StrictMode>,

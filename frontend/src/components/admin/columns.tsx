@@ -1,7 +1,7 @@
-import type { ColumnDef } from "@tanstack/react-table";
+import { Chip } from "@heroui/react";
 
 import type { UserPublic } from "@/client";
-import { Badge } from "@/components/ui/badge";
+import type { DataColumn } from "@/components/common/data-table";
 import { cn } from "@/lib/utils";
 import { UserActionsMenu } from "./user-actions-menu";
 
@@ -9,76 +9,65 @@ export type UserTableData = UserPublic & {
     isCurrentUser: boolean;
 };
 
-export const columns: ColumnDef<UserTableData>[] = [
+export const columns: DataColumn<UserTableData>[] = [
     {
-        accessorKey: "full_name",
+        id: "full_name",
         header: "Full Name",
-        cell: ({ row }) => {
-            const fullName = row.original.full_name;
+        cell: (row) => {
+            const fullName = row.full_name;
             return (
                 <div className="flex items-center gap-2">
                     <span
-                        className={cn(
-                            "font-medium",
-                            !fullName && "text-muted-foreground",
-                        )}
+                        className={cn("font-medium", !fullName && "text-muted")}
                     >
                         {fullName || "N/A"}
                     </span>
-                    {row.original.isCurrentUser && (
-                        <Badge variant="outline" className="text-xs">
+                    {row.isCurrentUser && (
+                        <Chip size="sm" variant="soft" className="text-xs">
                             You
-                        </Badge>
+                        </Chip>
                     )}
                 </div>
             );
         },
     },
     {
-        accessorKey: "email",
+        id: "email",
         header: "Email",
-        cell: ({ row }) => (
-            <span className="text-muted-foreground">{row.original.email}</span>
-        ),
+        cell: (row) => <span className="text-muted">{row.email}</span>,
     },
     {
-        accessorKey: "is_superuser",
+        id: "is_superuser",
         header: "Role",
-        cell: ({ row }) => (
-            <Badge
-                variant={row.original.is_superuser ? "default" : "secondary"}
-            >
-                {row.original.is_superuser ? "Superuser" : "User"}
-            </Badge>
+        cell: (row) => (
+            <Chip size="sm" color={row.is_superuser ? "accent" : "default"}>
+                {row.is_superuser ? "Superuser" : "User"}
+            </Chip>
         ),
     },
     {
-        accessorKey: "is_active",
+        id: "is_active",
         header: "Status",
-        cell: ({ row }) => (
+        cell: (row) => (
             <div className="flex items-center gap-2">
                 <span
                     className={cn(
                         "size-2 rounded-full",
-                        row.original.is_active ? "bg-green-500" : "bg-gray-400",
+                        row.is_active ? "bg-green-500" : "bg-gray-400",
                     )}
                 />
-                <span
-                    className={
-                        row.original.is_active ? "" : "text-muted-foreground"
-                    }
-                >
-                    {row.original.is_active ? "Active" : "Inactive"}
+                <span className={row.is_active ? "" : "text-muted"}>
+                    {row.is_active ? "Active" : "Inactive"}
                 </span>
             </div>
         ),
     },
     {
         id: "actions",
-        header: () => <span className="sr-only">Actions</span>,
-        cell: ({ row }) => (
+        header: <span className="sr-only">Actions</span>,
+        cell: (row) => (
             <div className="flex justify-end">
-                <UserActionsMenu user={row.original} />
+                <UserActionsMenu user={row} />
             </div>
         ),
     },

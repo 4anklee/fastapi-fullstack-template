@@ -1,13 +1,13 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Suspense } from "react";
-
 import { type UserPublic, usersReadMe } from "@/client";
 import { usersListOptions } from "@/client/@tanstack/react-query.gen";
 import AddUser from "@/components/admin/add-user";
 import { columns, type UserTableData } from "@/components/admin/columns";
 import { DataTable } from "@/components/common/data-table";
 import PendingUsers from "@/components/pending/pending-users";
+import { APP_NAME } from "@/config";
 import useAuth from "@/hooks/use-auth";
 
 function getUsersQueryOptions() {
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_layout/admin")({
     head: () => ({
         meta: [
             {
-                title: "Admin - Handwriting Recognition",
+                title: `Admin - ${APP_NAME}`,
             },
         ],
     }),
@@ -58,8 +58,8 @@ function Admin() {
         <div className="flex flex-col gap-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="font-bold text-2xl tracking-tight">Users</h1>
-                    <p className="text-muted-foreground">
+                    <h1 className="text-2xl font-bold tracking-tight">Users</h1>
+                    <p className="text-muted">
                         Manage user accounts and permissions
                     </p>
                 </div>

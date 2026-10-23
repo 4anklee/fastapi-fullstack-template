@@ -1,4 +1,4 @@
-import { Briefcase, Home, Users } from "lucide-react";
+import { Briefcase, House as Home, Persons as Users } from "@gravity-ui/icons";
 
 import { SidebarAppearance } from "@/components/common/appearance";
 import { Logo } from "@/components/common/logo";

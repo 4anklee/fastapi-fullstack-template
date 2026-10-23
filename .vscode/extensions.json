@@ -10,6 +10,7 @@
         "mjmlio.vscode-mjml",
         "ms-playwright.playwright",
         "ms-python.python",
+        "ms-python.debugpy",
         "tombi-toml.tombi"
     ]
 }

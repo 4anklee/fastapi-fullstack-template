@@ -7,7 +7,6 @@ import {
 } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import { loginRecoverMutation } from "@/client/@tanstack/react-query.gen";
 import { AuthLayout } from "@/components/common/auth-layout";
 import {
@@ -20,6 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { LoadingButton } from "@/components/ui/loading-button";
+import { APP_NAME } from "@/config";
 import { isLoggedIn } from "@/hooks/use-auth";
 import useCustomToast from "@/hooks/use-custom-toast";
 import { handleError } from "@/utils";
@@ -42,7 +42,7 @@ export const Route = createFileRoute("/recover-password")({
     head: () => ({
         meta: [
             {
-                title: "Recover Password - Handwriting Recognition",
+                title: `Recover Password - ${APP_NAME}`,
             },
         ],
     }),
@@ -79,7 +79,7 @@ function RecoverPassword() {
                     className="flex flex-col gap-6"
                 >
                     <div className="flex flex-col items-center gap-2 text-center">
-                        <h1 className="font-bold text-2xl">
+                        <h1 className="text-2xl font-bold">
                             Password Recovery
                         </h1>
                     </div>

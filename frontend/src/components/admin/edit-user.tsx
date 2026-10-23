@@ -1,17 +1,14 @@
+import { Checkbox, Label } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Pencil } from "lucide-react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import type { UserPublic } from "@/client";
 import {
     usersListQueryKey,
     usersUpdateMutation,
 } from "@/client/@tanstack/react-query.gen";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
     Dialog,
     DialogClose,
@@ -21,7 +18,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import {
     Form,
     FormControl,
@@ -60,11 +56,11 @@ type FormData = z.infer<typeof formSchema>;
 
 type EditUserProps = {
     user: UserPublic;
-    onSuccess: () => void;
+    isOpen: boolean;
+    setIsOpen: (open: boolean) => void;
 };
 
-const EditUser = ({ user, onSuccess }: EditUserProps) => {
-    const [isOpen, setIsOpen] = useState(false);
+const EditUser = ({ user, isOpen, setIsOpen }: EditUserProps) => {
     const queryClient = useQueryClient();
     const { showSuccessToast, showErrorToast } = useCustomToast();
 
@@ -85,7 +81,6 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
         onSuccess: () => {
             showSuccessToast("User updated successfully");
             setIsOpen(false);
-            onSuccess();
         },
         onError: handleError.bind(showErrorToast),
         onSettled: () => {
@@ -107,13 +102,6 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DropdownMenuItem
-                onSelect={(e) => e.preventDefault()}
-                onClick={() => setIsOpen(true)}
-            >
-                <Pencil />
-                Edit User
-            </DropdownMenuItem>
             <DialogContent className="sm:max-w-md">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -131,7 +119,7 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
                                     <FormItem>
                                         <FormLabel>
                                             Email{" "}
-                                            <span className="text-destructive">
+                                            <span className="text-danger">
                                                 *
                                             </span>
                                         </FormLabel>
@@ -207,15 +195,19 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
                                 name="is_superuser"
                                 render={({ field }) => (
                                     <FormItem className="flex items-center gap-3 space-y-0">
-                                        <FormControl>
-                                            <Checkbox
-                                                checked={field.value}
-                                                onCheckedChange={field.onChange}
-                                            />
-                                        </FormControl>
-                                        <FormLabel className="font-normal">
-                                            Is superuser?
-                                        </FormLabel>
+                                        <Checkbox
+                                            isSelected={field.value}
+                                            onChange={field.onChange}
+                                            name={field.name}
+                                            onBlur={field.onBlur}
+                                        >
+                                            <Checkbox.Content>
+                                                <Checkbox.Control>
+                                                    <Checkbox.Indicator />
+                                                </Checkbox.Control>
+                                                <Label>Is superuser?</Label>
+                                            </Checkbox.Content>
+                                        </Checkbox>
                                     </FormItem>
                                 )}
                             />
@@ -225,15 +217,19 @@ const EditUser = ({ user, onSuccess }: EditUserProps) => {
                                 name="is_active"
                                 render={({ field }) => (
                                     <FormItem className="flex items-center gap-3 space-y-0">
-                                        <FormControl>
-                                            <Checkbox
-                                                checked={field.value}
-                                                onCheckedChange={field.onChange}
-                                            />
-                                        </FormControl>
-                                        <FormLabel className="font-normal">
-                                            Is active?
-                                        </FormLabel>
+                                        <Checkbox
+                                            isSelected={field.value}
+                                            onChange={field.onChange}
+                                            name={field.name}
+                                            onBlur={field.onBlur}
+                                        >
+                                            <Checkbox.Content>
+                                                <Checkbox.Control>
+                                                    <Checkbox.Indicator />
+                                                </Checkbox.Control>
+                                                <Label>Is active?</Label>
+                                            </Checkbox.Content>
+                                        </Checkbox>
                                     </FormItem>
                                 )}
                             />

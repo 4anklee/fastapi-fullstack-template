@@ -1,16 +1,15 @@
+import { Plus } from "@gravity-ui/icons";
+import { Checkbox, Label } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import {
     usersCreateMutation,
     usersListQueryKey,
 } from "@/client/@tanstack/react-query.gen";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
     Dialog,
     DialogClose,
@@ -116,7 +115,7 @@ const AddUser = () => {
                                     <FormItem>
                                         <FormLabel>
                                             Email{" "}
-                                            <span className="text-destructive">
+                                            <span className="text-danger">
                                                 *
                                             </span>
                                         </FormLabel>
@@ -158,7 +157,7 @@ const AddUser = () => {
                                     <FormItem>
                                         <FormLabel>
                                             Set Password{" "}
-                                            <span className="text-destructive">
+                                            <span className="text-danger">
                                                 *
                                             </span>
                                         </FormLabel>
@@ -182,7 +181,7 @@ const AddUser = () => {
                                     <FormItem>
                                         <FormLabel>
                                             Confirm Password{" "}
-                                            <span className="text-destructive">
+                                            <span className="text-danger">
                                                 *
                                             </span>
                                         </FormLabel>
@@ -204,15 +203,19 @@ const AddUser = () => {
                                 name="is_superuser"
                                 render={({ field }) => (
                                     <FormItem className="flex items-center gap-3 space-y-0">
-                                        <FormControl>
-                                            <Checkbox
-                                                checked={field.value}
-                                                onCheckedChange={field.onChange}
-                                            />
-                                        </FormControl>
-                                        <FormLabel className="font-normal">
-                                            Is superuser?
-                                        </FormLabel>
+                                        <Checkbox
+                                            isSelected={field.value}
+                                            onChange={field.onChange}
+                                            name={field.name}
+                                            onBlur={field.onBlur}
+                                        >
+                                            <Checkbox.Content>
+                                                <Checkbox.Control>
+                                                    <Checkbox.Indicator />
+                                                </Checkbox.Control>
+                                                <Label>Is superuser?</Label>
+                                            </Checkbox.Content>
+                                        </Checkbox>
                                     </FormItem>
                                 )}
                             />
@@ -222,15 +225,19 @@ const AddUser = () => {
                                 name="is_active"
                                 render={({ field }) => (
                                     <FormItem className="flex items-center gap-3 space-y-0">
-                                        <FormControl>
-                                            <Checkbox
-                                                checked={field.value}
-                                                onCheckedChange={field.onChange}
-                                            />
-                                        </FormControl>
-                                        <FormLabel className="font-normal">
-                                            Is active?
-                                        </FormLabel>
+                                        <Checkbox
+                                            isSelected={field.value}
+                                            onChange={field.onChange}
+                                            name={field.name}
+                                            onBlur={field.onBlur}
+                                        >
+                                            <Checkbox.Content>
+                                                <Checkbox.Control>
+                                                    <Checkbox.Indicator />
+                                                </Checkbox.Control>
+                                                <Label>Is active?</Label>
+                                            </Checkbox.Content>
+                                        </Checkbox>
                                     </FormItem>
                                 )}
                             />

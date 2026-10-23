@@ -1,7 +1,7 @@
-import type { ColumnDef } from "@tanstack/react-table";
-import { Check, Copy } from "lucide-react";
-
+import { Check, Copy } from "@gravity-ui/icons";
+import { Tooltip } from "@heroui/react";
 import type { ItemPublic } from "@/client";
+import type { DataColumn } from "@/components/common/data-table";
 import { Button } from "@/components/ui/button";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { cn } from "@/lib/utils";
@@ -13,48 +13,51 @@ function CopyId({ id }: { id: string }) {
 
     return (
         <div className="group flex items-center gap-1.5">
-            <span className="font-mono text-muted-foreground text-xs">
+            <span className="text-muted font-mono text-xs whitespace-nowrap">
                 {id}
             </span>
-            <Button
-                variant="ghost"
-                size="icon"
-                className="size-6 opacity-0 transition-opacity group-hover:opacity-100"
-                onClick={() => copy(id)}
-            >
-                {isCopied ? (
-                    <Check className="size-3 text-green-500" />
-                ) : (
-                    <Copy className="size-3" />
-                )}
-                <span className="sr-only">Copy ID</span>
-            </Button>
+            <Tooltip>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-6 opacity-60 transition-opacity hover:opacity-100 focus-visible:opacity-100"
+                    onPress={() => copy(id)}
+                >
+                    {isCopied ? (
+                        <Check className="size-3 text-green-500" />
+                    ) : (
+                        <Copy className="size-3" />
+                    )}
+                    <span className="sr-only">Copy ID</span>
+                </Button>
+                <Tooltip.Content>
+                    {isCopied ? "Copied" : "Copy ID"}
+                </Tooltip.Content>
+            </Tooltip>
         </div>
     );
 }
 
-export const columns: ColumnDef<ItemPublic>[] = [
+export const columns: DataColumn<ItemPublic>[] = [
     {
-        accessorKey: "id",
+        id: "id",
         header: "ID",
-        cell: ({ row }) => <CopyId id={row.original.id} />,
+        cell: (row) => <CopyId id={row.id} />,
     },
     {
-        accessorKey: "title",
+        id: "title",
         header: "Title",
-        cell: ({ row }) => (
-            <span className="font-medium">{row.original.title}</span>
-        ),
+        cell: (row) => <span className="font-medium">{row.title}</span>,
     },
     {
-        accessorKey: "description",
+        id: "description",
         header: "Description",
-        cell: ({ row }) => {
-            const description = row.original.description;
+        cell: (row) => {
+            const description = row.description;
             return (
                 <span
                     className={cn(
-                        "block max-w-xs truncate text-muted-foreground",
+                        "text-muted block max-w-xs truncate",
                         !description && "italic",
                     )}
                 >
@@ -65,10 +68,10 @@ export const columns: ColumnDef<ItemPublic>[] = [
     },
     {
         id: "actions",
-        header: () => <span className="sr-only">Actions</span>,
-        cell: ({ row }) => (
+        header: <span className="sr-only">Actions</span>,
+        cell: (row) => (
             <div className="flex justify-end">
-                <ItemActionsMenu item={row.original} />
+                <ItemActionsMenu item={row} />
             </div>
         ),
     },

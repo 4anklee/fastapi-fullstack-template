@@ -1,7 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Pencil } from "lucide-react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -20,7 +18,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import {
     Form,
     FormControl,
@@ -43,11 +40,11 @@ type FormData = z.infer<typeof formSchema>;
 
 type EditItemProps = {
     item: ItemPublic;
-    onSuccess: () => void;
+    isOpen: boolean;
+    setIsOpen: (open: boolean) => void;
 };
 
-const EditItem = ({ item, onSuccess }: EditItemProps) => {
-    const [isOpen, setIsOpen] = useState(false);
+const EditItem = ({ item, isOpen, setIsOpen }: EditItemProps) => {
     const queryClient = useQueryClient();
     const { showSuccessToast, showErrorToast } = useCustomToast();
 
@@ -66,7 +63,6 @@ const EditItem = ({ item, onSuccess }: EditItemProps) => {
         onSuccess: () => {
             showSuccessToast("Item updated successfully");
             setIsOpen(false);
-            onSuccess();
         },
         onError: handleError.bind(showErrorToast),
         onSettled: () => {
@@ -83,13 +79,6 @@ const EditItem = ({ item, onSuccess }: EditItemProps) => {
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DropdownMenuItem
-                onSelect={(e) => e.preventDefault()}
-                onClick={() => setIsOpen(true)}
-            >
-                <Pencil />
-                Edit Item
-            </DropdownMenuItem>
             <DialogContent className="sm:max-w-md">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -107,7 +96,7 @@ const EditItem = ({ item, onSuccess }: EditItemProps) => {
                                     <FormItem>
                                         <FormLabel>
                                             Title{" "}
-                                            <span className="text-destructive">
+                                            <span className="text-danger">
                                                 *
                                             </span>
                                         </FormLabel>

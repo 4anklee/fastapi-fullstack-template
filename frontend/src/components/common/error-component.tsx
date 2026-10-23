@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
 
 const ErrorComponent = () => {
     return (
@@ -9,18 +8,18 @@ const ErrorComponent = () => {
         >
             <div className="z-10 flex items-center">
                 <div className="ml-4 flex flex-col items-center justify-center p-4">
-                    <span className="mb-4 font-bold text-6xl leading-none md:text-8xl">
+                    <span className="mb-4 text-6xl leading-none font-bold md:text-8xl">
                         Error
                     </span>
-                    <span className="mb-2 font-bold text-2xl">Oops!</span>
+                    <span className="mb-2 text-2xl font-bold">Oops!</span>
                 </div>
             </div>
 
-            <p className="z-10 mb-4 text-center text-lg text-muted-foreground">
+            <p className="text-muted z-10 mb-4 text-center text-lg">
                 Something went wrong. Please try again.
             </p>
-            <Link to="/">
-                <Button>Go Home</Button>
+            <Link to="/" className="button button--primary mt-4">
+                Go Home
             </Link>
         </div>
     );

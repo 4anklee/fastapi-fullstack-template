@@ -1,6 +1,6 @@
 # Frontend
 
-React, Vite, TypeScript, TanStack Query and Router, and Tailwind CSS.
+React, Vite, TypeScript, TanStack Query and Router, Tailwind CSS, HeroUI v3, and Gravity UI icons.
 Use Node.js 24 and the pnpm version pinned in the root `package.json`.
 
 ## Development
@@ -43,11 +43,17 @@ pnpm --filter frontend gen:client
 
 Commit generated changes in `src/client/` with the corresponding API changes.
 
+The build uses TypeScript 7 (`@typescript/native`). TypeScript 6 remains installed
+as `typescript` (the official `@typescript/typescript6` compatibility package) because the API generator requires the classic compiler API.
+
 ## Code structure
 
 - `src/assets/`: static assets.
 - `src/client/`: generated API client.
-- `src/components/`: reusable components.
+- `src/components/`: app components built with `@heroui/react`; icons come from
+  `@gravity-ui/icons`. The `ui/` folder contains shared form, button, modal, and
+  sidebar adapters.
+- `src/index.css`: HeroUI styles and the app’s light/dark teal accent theme.
 - `src/hooks/`: custom hooks.
 - `src/routes/`: pages and route definitions.
 

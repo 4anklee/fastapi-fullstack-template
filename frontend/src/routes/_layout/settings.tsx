@@ -1,8 +1,9 @@
+import { Tabs } from "@heroui/react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ChangePassword from "@/components/user-settings/change-password";
 import DeleteAccount from "@/components/user-settings/delete-account";
 import UserInformation from "@/components/user-settings/user-information";
+import { APP_NAME } from "@/config";
 import useAuth from "@/hooks/use-auth";
 
 const tabsConfig = [
@@ -16,7 +17,7 @@ export const Route = createFileRoute("/_layout/settings")({
     head: () => ({
         meta: [
             {
-                title: "Settings - Handwriting Recognition",
+                title: `Settings - ${APP_NAME}`,
             },
         ],
     }),
@@ -35,26 +36,29 @@ function UserSettings() {
     return (
         <div className="flex flex-col gap-6">
             <div>
-                <h1 className="font-bold text-2xl tracking-tight">
+                <h1 className="text-2xl font-bold tracking-tight">
                     User Settings
                 </h1>
-                <p className="text-muted-foreground">
+                <p className="text-muted">
                     Manage your account settings and preferences
                 </p>
             </div>
 
-            <Tabs defaultValue="my-profile">
-                <TabsList>
-                    {finalTabs.map((tab) => (
-                        <TabsTrigger key={tab.value} value={tab.value}>
-                            {tab.title}
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
+            <Tabs defaultSelectedKey="my-profile">
+                <Tabs.ListContainer>
+                    <Tabs.List aria-label="Account settings">
+                        {finalTabs.map((tab) => (
+                            <Tabs.Tab key={tab.value} id={tab.value}>
+                                {tab.title}
+                                <Tabs.Indicator />
+                            </Tabs.Tab>
+                        ))}
+                    </Tabs.List>
+                </Tabs.ListContainer>
                 {finalTabs.map((tab) => (
-                    <TabsContent key={tab.value} value={tab.value}>
+                    <Tabs.Panel key={tab.value} id={tab.value} className="pt-6">
                         <tab.component />
-                    </TabsContent>
+                    </Tabs.Panel>
                 ))}
             </Tabs>
         </div>

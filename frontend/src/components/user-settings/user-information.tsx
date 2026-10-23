@@ -85,7 +85,7 @@ const UserInformation = () => {
 
     return (
         <div className="max-w-md">
-            <h3 className="py-4 font-semibold text-lg">User Information</h3>
+            <h3 className="py-4 text-lg font-semibold">User Information</h3>
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
@@ -109,8 +109,7 @@ const UserInformation = () => {
                                     <p
                                         className={cn(
                                             "max-w-sm truncate py-2",
-                                            !field.value &&
-                                                "text-muted-foreground",
+                                            !field.value && "text-muted",
                                         )}
                                     >
                                         {field.value || "N/A"}
@@ -156,14 +155,14 @@ const UserInformation = () => {
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    onClick={onCancel}
+                                    onPress={onCancel}
                                     disabled={isPending}
                                 >
                                     Cancel
                                 </Button>
                             </>
                         ) : (
-                            <Button type="button" onClick={toggleEditMode}>
+                            <Button type="button" onPress={toggleEditMode}>
                                 Edit
                             </Button>
                         )}

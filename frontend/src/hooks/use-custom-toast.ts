@@ -1,4 +1,4 @@
-import { toast } from "sonner";
+import { toast } from "@heroui/react";
 
 const useCustomToast = () => {
     const showSuccessToast = (description: string) => {
@@ -8,7 +8,7 @@ const useCustomToast = () => {
     };
 
     const showErrorToast = (description: string) => {
-        toast.error("Something went wrong!", {
+        toast.danger("Something went wrong!", {
             description,
         });
     };

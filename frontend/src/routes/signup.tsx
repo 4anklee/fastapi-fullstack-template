@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { LoadingButton } from "@/components/ui/loading-button";
 import { PasswordInput } from "@/components/ui/password-input";
+import { APP_NAME } from "@/config";
 import useAuth, { isLoggedIn } from "@/hooks/use-auth";
 
 const formSchema = z
@@ -51,7 +52,7 @@ export const Route = createFileRoute("/signup")({
     head: () => ({
         meta: [
             {
-                title: "Sign Up - Handwriting Recognition",
+                title: `Sign Up - ${APP_NAME}`,
             },
         ],
     }),
@@ -87,7 +88,7 @@ function SignUp() {
                     className="flex flex-col gap-6"
                 >
                     <div className="flex flex-col items-center gap-2 text-center">
-                        <h1 className="font-bold text-2xl">
+                        <h1 className="text-2xl font-bold">
                             Create an account
                         </h1>
                     </div>

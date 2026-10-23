@@ -2,7 +2,9 @@
 
 import {
     type Client,
+    type ClientMeta,
     type Options as Options2,
+    type RequestResult,
     type TDataShape,
     urlSearchParamsBodySerializer,
 } from "./client";
@@ -90,7 +92,9 @@ export type Options<
      * You can pass arbitrary values through the `meta` object. This can be
      * used to access values that aren't defined as part of the SDK function.
      */
-    meta?: Record<string, unknown>;
+    meta?: keyof ClientMeta extends never
+        ? Record<string, unknown>
+        : ClientMeta;
 };
 
 /**
@@ -100,7 +104,11 @@ export type Options<
  */
 export const loginLoginAccessToken = <ThrowOnError extends boolean = false>(
     options: Options<LoginLoginAccessTokenData, ThrowOnError>,
-) =>
+): RequestResult<
+    LoginLoginAccessTokenResponses,
+    LoginLoginAccessTokenErrors,
+    ThrowOnError
+> =>
     (options.client ?? client).post<
         LoginLoginAccessTokenResponses,
         LoginLoginAccessTokenErrors,
@@ -122,7 +130,7 @@ export const loginLoginAccessToken = <ThrowOnError extends boolean = false>(
  */
 export const loginTestToken = <ThrowOnError extends boolean = false>(
     options?: Options<LoginTestTokenData, ThrowOnError>,
-) =>
+): RequestResult<LoginTestTokenResponses, unknown, ThrowOnError> =>
     (options?.client ?? client).post<
         LoginTestTokenResponses,
         unknown,
@@ -140,7 +148,7 @@ export const loginTestToken = <ThrowOnError extends boolean = false>(
  */
 export const loginRecover = <ThrowOnError extends boolean = false>(
     options: Options<LoginRecoverData, ThrowOnError>,
-) =>
+): RequestResult<LoginRecoverResponses, LoginRecoverErrors, ThrowOnError> =>
     (options.client ?? client).post<
         LoginRecoverResponses,
         LoginRecoverErrors,
@@ -154,7 +162,7 @@ export const loginRecover = <ThrowOnError extends boolean = false>(
  */
 export const loginReset = <ThrowOnError extends boolean = false>(
     options: Options<LoginResetData, ThrowOnError>,
-) =>
+): RequestResult<LoginResetResponses, LoginResetErrors, ThrowOnError> =>
     (options.client ?? client).post<
         LoginResetResponses,
         LoginResetErrors,
@@ -177,7 +185,11 @@ export const loginRecoverPasswordHtmlContent = <
     ThrowOnError extends boolean = false,
 >(
     options: Options<LoginRecoverPasswordHtmlContentData, ThrowOnError>,
-) =>
+): RequestResult<
+    LoginRecoverPasswordHtmlContentResponses,
+    LoginRecoverPasswordHtmlContentErrors,
+    ThrowOnError
+> =>
     (options.client ?? client).post<
         LoginRecoverPasswordHtmlContentResponses,
         LoginRecoverPasswordHtmlContentErrors,
@@ -195,7 +207,7 @@ export const loginRecoverPasswordHtmlContent = <
  */
 export const usersList = <ThrowOnError extends boolean = false>(
     options?: Options<UsersListData, ThrowOnError>,
-) =>
+): RequestResult<UsersListResponses, UsersListErrors, ThrowOnError> =>
     (options?.client ?? client).get<
         UsersListResponses,
         UsersListErrors,
@@ -213,7 +225,7 @@ export const usersList = <ThrowOnError extends boolean = false>(
  */
 export const usersCreate = <ThrowOnError extends boolean = false>(
     options: Options<UsersCreateData, ThrowOnError>,
-) =>
+): RequestResult<UsersCreateResponses, UsersCreateErrors, ThrowOnError> =>
     (options.client ?? client).post<
         UsersCreateResponses,
         UsersCreateErrors,
@@ -235,7 +247,7 @@ export const usersCreate = <ThrowOnError extends boolean = false>(
  */
 export const usersDeleteMe = <ThrowOnError extends boolean = false>(
     options?: Options<UsersDeleteMeData, ThrowOnError>,
-) =>
+): RequestResult<UsersDeleteMeResponses, unknown, ThrowOnError> =>
     (options?.client ?? client).delete<
         UsersDeleteMeResponses,
         unknown,
@@ -253,7 +265,7 @@ export const usersDeleteMe = <ThrowOnError extends boolean = false>(
  */
 export const usersReadMe = <ThrowOnError extends boolean = false>(
     options?: Options<UsersReadMeData, ThrowOnError>,
-) =>
+): RequestResult<UsersReadMeResponses, unknown, ThrowOnError> =>
     (options?.client ?? client).get<
         UsersReadMeResponses,
         unknown,
@@ -271,7 +283,7 @@ export const usersReadMe = <ThrowOnError extends boolean = false>(
  */
 export const usersUpdateMe = <ThrowOnError extends boolean = false>(
     options: Options<UsersUpdateMeData, ThrowOnError>,
-) =>
+): RequestResult<UsersUpdateMeResponses, UsersUpdateMeErrors, ThrowOnError> =>
     (options.client ?? client).patch<
         UsersUpdateMeResponses,
         UsersUpdateMeErrors,
@@ -293,7 +305,11 @@ export const usersUpdateMe = <ThrowOnError extends boolean = false>(
  */
 export const usersUpdateMePassword = <ThrowOnError extends boolean = false>(
     options: Options<UsersUpdateMePasswordData, ThrowOnError>,
-) =>
+): RequestResult<
+    UsersUpdateMePasswordResponses,
+    UsersUpdateMePasswordErrors,
+    ThrowOnError
+> =>
     (options.client ?? client).patch<
         UsersUpdateMePasswordResponses,
         UsersUpdateMePasswordErrors,
@@ -315,7 +331,7 @@ export const usersUpdateMePassword = <ThrowOnError extends boolean = false>(
  */
 export const usersRegister = <ThrowOnError extends boolean = false>(
     options: Options<UsersRegisterData, ThrowOnError>,
-) =>
+): RequestResult<UsersRegisterResponses, UsersRegisterErrors, ThrowOnError> =>
     (options.client ?? client).post<
         UsersRegisterResponses,
         UsersRegisterErrors,
@@ -336,7 +352,7 @@ export const usersRegister = <ThrowOnError extends boolean = false>(
  */
 export const usersDelete = <ThrowOnError extends boolean = false>(
     options: Options<UsersDeleteData, ThrowOnError>,
-) =>
+): RequestResult<UsersDeleteResponses, UsersDeleteErrors, ThrowOnError> =>
     (options.client ?? client).delete<
         UsersDeleteResponses,
         UsersDeleteErrors,
@@ -354,7 +370,7 @@ export const usersDelete = <ThrowOnError extends boolean = false>(
  */
 export const usersRead = <ThrowOnError extends boolean = false>(
     options: Options<UsersReadData, ThrowOnError>,
-) =>
+): RequestResult<UsersReadResponses, UsersReadErrors, ThrowOnError> =>
     (options.client ?? client).get<
         UsersReadResponses,
         UsersReadErrors,
@@ -372,7 +388,7 @@ export const usersRead = <ThrowOnError extends boolean = false>(
  */
 export const usersUpdate = <ThrowOnError extends boolean = false>(
     options: Options<UsersUpdateData, ThrowOnError>,
-) =>
+): RequestResult<UsersUpdateResponses, UsersUpdateErrors, ThrowOnError> =>
     (options.client ?? client).patch<
         UsersUpdateResponses,
         UsersUpdateErrors,
@@ -394,7 +410,7 @@ export const usersUpdate = <ThrowOnError extends boolean = false>(
  */
 export const utilsTestEmail = <ThrowOnError extends boolean = false>(
     options: Options<UtilsTestEmailData, ThrowOnError>,
-) =>
+): RequestResult<UtilsTestEmailResponses, UtilsTestEmailErrors, ThrowOnError> =>
     (options.client ?? client).post<
         UtilsTestEmailResponses,
         UtilsTestEmailErrors,
@@ -410,7 +426,7 @@ export const utilsTestEmail = <ThrowOnError extends boolean = false>(
  */
 export const utilsHealthCheck = <ThrowOnError extends boolean = false>(
     options?: Options<UtilsHealthCheckData, ThrowOnError>,
-) =>
+): RequestResult<UtilsHealthCheckResponses, unknown, ThrowOnError> =>
     (options?.client ?? client).get<
         UtilsHealthCheckResponses,
         unknown,
@@ -424,7 +440,7 @@ export const utilsHealthCheck = <ThrowOnError extends boolean = false>(
  */
 export const itemsList = <ThrowOnError extends boolean = false>(
     options?: Options<ItemsListData, ThrowOnError>,
-) =>
+): RequestResult<ItemsListResponses, ItemsListErrors, ThrowOnError> =>
     (options?.client ?? client).get<
         ItemsListResponses,
         ItemsListErrors,
@@ -442,7 +458,7 @@ export const itemsList = <ThrowOnError extends boolean = false>(
  */
 export const itemsCreate = <ThrowOnError extends boolean = false>(
     options: Options<ItemsCreateData, ThrowOnError>,
-) =>
+): RequestResult<ItemsCreateResponses, ItemsCreateErrors, ThrowOnError> =>
     (options.client ?? client).post<
         ItemsCreateResponses,
         ItemsCreateErrors,
@@ -464,7 +480,7 @@ export const itemsCreate = <ThrowOnError extends boolean = false>(
  */
 export const itemsDelete = <ThrowOnError extends boolean = false>(
     options: Options<ItemsDeleteData, ThrowOnError>,
-) =>
+): RequestResult<ItemsDeleteResponses, ItemsDeleteErrors, ThrowOnError> =>
     (options.client ?? client).delete<
         ItemsDeleteResponses,
         ItemsDeleteErrors,
@@ -482,7 +498,7 @@ export const itemsDelete = <ThrowOnError extends boolean = false>(
  */
 export const itemsRead = <ThrowOnError extends boolean = false>(
     options: Options<ItemsReadData, ThrowOnError>,
-) =>
+): RequestResult<ItemsReadResponses, ItemsReadErrors, ThrowOnError> =>
     (options.client ?? client).get<
         ItemsReadResponses,
         ItemsReadErrors,
@@ -500,7 +516,7 @@ export const itemsRead = <ThrowOnError extends boolean = false>(
  */
 export const itemsUpdate = <ThrowOnError extends boolean = false>(
     options: Options<ItemsUpdateData, ThrowOnError>,
-) =>
+): RequestResult<ItemsUpdateResponses, ItemsUpdateErrors, ThrowOnError> =>
     (options.client ?? client).put<
         ItemsUpdateResponses,
         ItemsUpdateErrors,
@@ -522,7 +538,7 @@ export const itemsUpdate = <ThrowOnError extends boolean = false>(
  */
 export const privateCreate = <ThrowOnError extends boolean = false>(
     options: Options<PrivateCreateData, ThrowOnError>,
-) =>
+): RequestResult<PrivateCreateResponses, PrivateCreateErrors, ThrowOnError> =>
     (options.client ?? client).post<
         PrivateCreateResponses,
         PrivateCreateErrors,

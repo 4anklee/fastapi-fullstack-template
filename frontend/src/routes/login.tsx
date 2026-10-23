@@ -6,7 +6,6 @@ import {
 } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import type { BodyLoginLoginAccessToken as AccessToken } from "@/client";
 import { AuthLayout } from "@/components/common/auth-layout";
 import {
@@ -20,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { LoadingButton } from "@/components/ui/loading-button";
 import { PasswordInput } from "@/components/ui/password-input";
+import { APP_NAME } from "@/config";
 import useAuth, { isLoggedIn } from "@/hooks/use-auth";
 
 const formSchema = z.object({
@@ -44,7 +44,7 @@ export const Route = createFileRoute("/login")({
     head: () => ({
         meta: [
             {
-                title: "Log In - Handwriting Recognition",
+                title: `Log In - ${APP_NAME}`,
             },
         ],
     }),
@@ -75,7 +75,7 @@ function Login() {
                     className="flex flex-col gap-6"
                 >
                     <div className="flex flex-col items-center gap-2 text-center">
-                        <h1 className="font-bold text-2xl">
+                        <h1 className="text-2xl font-bold">
                             Login to your account
                         </h1>
                     </div>

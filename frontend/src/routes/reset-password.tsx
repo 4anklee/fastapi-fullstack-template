@@ -8,7 +8,6 @@ import {
 } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import { loginResetMutation } from "@/client/@tanstack/react-query.gen";
 import { AuthLayout } from "@/components/common/auth-layout";
 import {
@@ -21,6 +20,7 @@ import {
 } from "@/components/ui/form";
 import { LoadingButton } from "@/components/ui/loading-button";
 import { PasswordInput } from "@/components/ui/password-input";
+import { APP_NAME } from "@/config";
 import { isLoggedIn } from "@/hooks/use-auth";
 import useCustomToast from "@/hooks/use-custom-toast";
 import { handleError } from "@/utils";
@@ -60,7 +60,7 @@ export const Route = createFileRoute("/reset-password")({
     head: () => ({
         meta: [
             {
-                title: "Reset Password - Handwriting Recognition",
+                title: `Reset Password - ${APP_NAME}`,
             },
         ],
     }),
@@ -103,7 +103,7 @@ function ResetPassword() {
                     className="flex flex-col gap-6"
                 >
                     <div className="flex flex-col items-center gap-2 text-center">
-                        <h1 className="font-bold text-2xl">Reset Password</h1>
+                        <h1 className="text-2xl font-bold">Reset Password</h1>
                     </div>
 
                     <div className="grid gap-4">

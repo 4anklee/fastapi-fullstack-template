@@ -1,5 +1,6 @@
+import { Layers } from "@gravity-ui/icons";
 import { Link } from "@tanstack/react-router";
-import { PencilLine } from "lucide-react";
+import { APP_NAME } from "@/config";
 
 import { cn } from "@/lib/utils";
 
@@ -17,9 +18,9 @@ export function Logo({
     const content =
         variant === "responsive" ? (
             <div className={cn("flex items-center gap-2", className)}>
-                <PencilLine className="size-5 shrink-0" aria-hidden="true" />
-                <span className="font-semibold text-sm group-data-[collapsible=icon]:hidden">
-                    Handwriting Recognition
+                <Layers className="size-5 shrink-0" aria-hidden="true" />
+                <span className="text-sm font-semibold group-data-[collapsible=icon]:hidden">
+                    {APP_NAME}
                 </span>
             </div>
         ) : (
@@ -30,10 +31,8 @@ export function Logo({
                     className,
                 )}
             >
-                <PencilLine className="size-5 shrink-0" aria-hidden="true" />
-                {variant === "full" ? (
-                    <span>Handwriting Recognition</span>
-                ) : null}
+                <Layers className="size-5 shrink-0" aria-hidden="true" />
+                {variant === "full" ? <span>{APP_NAME}</span> : null}
             </div>
         );
 
@@ -42,7 +41,7 @@ export function Logo({
     }
 
     return (
-        <Link to="/" aria-label="Handwriting Recognition">
+        <Link to="/" aria-label={APP_NAME}>
             {content}
         </Link>
     );

@@ -20,7 +20,7 @@
     "linter": {
         "enabled": true,
         "rules": {
-            "recommended": true,
+            "preset": "recommended",
             "suspicious": {
                 "useIterableCallbackReturn": "warn",
                 "noExplicitAny": "error",
@@ -32,14 +32,16 @@
                 "useSelfClosingElements": "error",
                 "noUselessElse": "error",
                 "useConsistentTypeDefinitions": {
-                    "options": { "style": "type" },
+                    "options": {
+                        "style": "type"
+                    },
                     "level": "warn"
                 },
                 "useImportType": "warn"
             },
             "nursery": {
-                "useSortedClasses": "warn",
-                "noFloatingPromises": "error"
+                "noFloatingPromises": "error",
+                "useTailwindSortedClasses": "warn"
             },
             "complexity": {
                 "useArrowFunction": "error"
@@ -76,6 +78,9 @@
                     "suspicious": {
                         "noExplicitAny": "off",
                         "useIterableCallbackReturn": "off"
+                    },
+                    "complexity": {
+                        "noBannedTypes": "off"
                     }
                 }
             }

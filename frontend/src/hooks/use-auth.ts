@@ -29,7 +29,7 @@ const useAuth = () => {
     const { mutateAsync: signUp, isPending: isSigningUp } = useMutation({
         ...usersRegisterMutation(),
         onSuccess: () => {
-            navigate({ to: "/login" });
+            return navigate({ to: "/login" });
         },
         onError: handleError.bind(showErrorToast),
         onSettled: () => {
@@ -41,14 +41,14 @@ const useAuth = () => {
         ...loginLoginAccessTokenMutation(),
         onSuccess: (data) => {
             localStorage.setItem("access_token", data.access_token);
-            navigate({ to: "/" });
+            return navigate({ to: "/" });
         },
         onError: handleError.bind(showErrorToast),
     });
 
     const logout = () => {
         localStorage.removeItem("access_token");
-        navigate({ to: "/login" });
+        return navigate({ to: "/login" });
     };
 
     return {

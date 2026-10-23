@@ -53,8 +53,15 @@ test.describe("Admin user management", () => {
         await page.getByPlaceholder("Email").fill(email);
         await page.getByPlaceholder("Password").first().fill(password);
         await page.getByPlaceholder("Password").last().fill(password);
-        await page.getByLabel("Is superuser?").check();
-        await page.getByLabel("Is active?").check();
+        // HeroUI keeps the native checkbox visually hidden; exercise its keyboard input.
+        const superuser = page.getByRole("checkbox", { name: "Is superuser?" });
+        await superuser.focus();
+        await superuser.press("Space");
+        await expect(superuser).toBeChecked();
+        await page.getByText("Is active?", { exact: true }).click();
+        await expect(
+            page.getByRole("checkbox", { name: "Is active?" }),
+        ).toBeChecked();
 
         await page.getByRole("button", { name: "Save" }).click();
 
