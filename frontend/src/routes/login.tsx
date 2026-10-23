@@ -123,7 +123,11 @@ function Login() {
                         )}
                     />
 
-                    <LoadingButton type="submit" loading={isLoggingIn}>
+                    <LoadingButton
+                        type="submit"
+                        className="w-full"
+                        loading={isLoggingIn}
+                    >
                         Log In
                     </LoadingButton>
                 </div>
