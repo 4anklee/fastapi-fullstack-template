@@ -35,9 +35,14 @@ jobs:
                     -e POSTGRES_SERVER=localhost \
                     -e POSTGRES_USER=postgres \
                     app:test
+            - name: Wait for app readiness
+              run: |
+                  # Docker can reset connections while the app is still starting.
+                  curl --fail --silent --show-error --retry 30 --retry-all-errors \
+                    --retry-delay 1 --retry-max-time 60 --connect-timeout 2 --max-time 5 \
+                    http://localhost:8080/api/v1/utils/health-check/
             - name: Check API and SPA
               run: |
-                  curl --fail --retry 30 --retry-connrefused --retry-delay 1 http://localhost:8080/api/v1/utils/health-check/
                   curl --fail -H "Accept: text/html" http://localhost:8080/login | grep -q '<div id="root">'
                   test "$(curl -s -o /dev/null -w '%{http_code}' -H 'Accept: text/html' http://localhost:8080/api/v1/missing)" = 404
             - name: Show app logs
