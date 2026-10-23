@@ -36,17 +36,6 @@ updates:
     - package-ecosystem: docker
       directories:
           - /backend
-          - /frontend
-      schedule:
-          interval: weekly
-      cooldown:
-          default-days: 7
-      commit-message:
-          prefix: ⬆
-      labels: [dependencies, internal]
-    # Docker Compose
-    - package-ecosystem: docker-compose
-      directory: /
       schedule:
           interval: weekly
       cooldown:

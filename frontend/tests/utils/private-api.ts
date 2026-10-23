@@ -4,7 +4,10 @@ import { privateCreate } from "../../src/client";
 import { client } from "../../src/client/client.gen";
 
 client.setConfig({
-    baseUrl: `${process.env.VITE_API_URL}`,
+    baseUrl:
+        process.env.VITE_API_URL ||
+        process.env.PLAYWRIGHT_BASE_URL ||
+        "http://localhost:8000",
 });
 
 export const createUser = async ({

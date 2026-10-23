@@ -16,7 +16,7 @@ import { ApiError } from "./utils";
 
 client.setConfig({
     auth: () => localStorage.getItem("access_token") || "",
-    baseUrl: import.meta.env.VITE_API_URL,
+    baseUrl: import.meta.env.VITE_API_URL || "",
 });
 
 client.interceptors.error.use((error, response) => {

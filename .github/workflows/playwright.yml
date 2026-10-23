@@ -36,9 +36,15 @@ jobs:
                   filters: |
                       changed:
                         - backend/**
+                        - package.json
+                        - pnpm-lock.yaml
+                        - pnpm-workspace.yaml
+                        - pyproject.toml
+                        - uv.lock
+                        - .dockerignore
                         - frontend/**
-                        - .env
-                        - compose*.yml
+                        - .env.example
+                        - scripts/generate-client.sh
                         - .github/workflows/playwright.yml
 
     test-playwright:
@@ -52,10 +58,51 @@ jobs:
                 shardIndex: [1, 2, 3, 4]
                 shardTotal: [4]
             fail-fast: false
+        services:
+            postgres:
+                image: postgres:18
+                env:
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: test-db-password
+                    POSTGRES_DB: app_test
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd "pg_isready -U postgres -d app_test"
+                    --health-interval 5s
+                    --health-timeout 5s
+                    --health-retries 10
+            mailcatcher:
+                image: schickling/mailcatcher@sha256:55ed289525a565f7587b138a423705267eb34eda1ec8d35acd6dc7966a933e84
+                ports:
+                    - 1025:1025
+                    - 1080:1080
+        env:
+            PROJECT_NAME: Test App
+            ENVIRONMENT: local
+            SECRET_KEY: ci-only-secret-for-tests-at-least-32-characters
+            FIRST_SUPERUSER: admin@example.com
+            FIRST_SUPERUSER_PASSWORD: test-admin-password
+            POSTGRES_SERVER: 127.0.0.1
+            POSTGRES_PORT: "5432"
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: test-db-password
+            POSTGRES_DB: app_test
+            FRONTEND_HOST: http://127.0.0.1:8000
+            PLAYWRIGHT_BASE_URL: http://127.0.0.1:8000
+            MAILCATCHER_HOST: http://127.0.0.1:1080
+            SMTP_HOST: 127.0.0.1
+            SMTP_PORT: "1025"
+            SMTP_TLS: "false"
+            EMAILS_FROM_EMAIL: noreply@example.com
         steps:
             - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
               with:
                   persist-credentials: false
+            - name: Set up Node.js
+              uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+              with:
+                  node-version: "24"
             - name: Enable pnpm
               run: corepack enable
             - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -76,11 +123,27 @@ jobs:
               working-directory: backend
             - run: pnpm install --frozen-lockfile
             - run: bash scripts/generate-client.sh
-            - run: docker compose build
-            - run: docker compose down -v --remove-orphans
+            - name: Install Chromium
+              run: pnpm --filter frontend exec playwright install --with-deps chromium
+            - name: Build frontend
+              run: pnpm --filter frontend build
+              env:
+                  VITE_API_URL: ""
+            - name: Initialize test database
+              run: uv run bash scripts/prestart.sh
+              working-directory: backend
+            - name: Start app
+              run: |
+                  uv run fastapi run app/main.py > /tmp/app.log 2>&1 &
+                  curl --fail --retry 30 --retry-connrefused --retry-delay 1 http://127.0.0.1:8000/api/v1/utils/health-check/
+                  curl --fail --retry 30 --retry-connrefused --retry-delay 1 http://127.0.0.1:1080/messages
+              working-directory: backend
             - name: Run Playwright tests
-              run: docker compose run --rm playwright pnpm exec playwright test --fail-on-flaky-tests --trace=retain-on-failure --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
-            - run: docker compose down -v --remove-orphans
+              run: pnpm exec playwright test --fail-on-flaky-tests --trace=retain-on-failure --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+              working-directory: frontend
+            - name: Show app logs
+              if: failure()
+              run: cat /tmp/app.log
             - name: Upload blob report to GitHub Actions Artifacts
               if: ${{ !cancelled() }}
               uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -102,6 +165,10 @@ jobs:
             - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
               with:
                   persist-credentials: false
+            - name: Set up Node.js
+              uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+              with:
+                  node-version: "24"
             - name: Enable pnpm
               run: corepack enable
             - name: Install dependencies

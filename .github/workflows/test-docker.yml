@@ -1,0 +1,48 @@
+name: Test Docker Image
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        types:
+            - opened
+            - synchronize
+
+permissions:
+    contents: read
+
+jobs:
+    test-docker:
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - name: Checkout
+              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+              with:
+                  persist-credentials: false
+            - name: Build app image
+              run: docker build -f backend/Dockerfile -t app:test .
+            - name: Start app on custom port
+              run: |
+                  docker run -d --name app-test -p 8080:8080 \
+                    -e PORT=8080 \
+                    -e PROJECT_NAME="Test App" \
+                    -e ENVIRONMENT=production \
+                    -e SECRET_KEY=ci-only-secret-for-tests-at-least-32-characters \
+                    -e FIRST_SUPERUSER=admin@example.com \
+                    -e FIRST_SUPERUSER_PASSWORD=test-admin-password \
+                    -e POSTGRES_SERVER=localhost \
+                    -e POSTGRES_USER=postgres \
+                    app:test
+            - name: Check API and SPA
+              run: |
+                  curl --fail --retry 30 --retry-connrefused --retry-delay 1 http://localhost:8080/api/v1/utils/health-check/
+                  curl --fail -H "Accept: text/html" http://localhost:8080/login | grep -q '<div id="root">'
+                  test "$(curl -s -o /dev/null -w '%{http_code}' -H 'Accept: text/html' http://localhost:8080/api/v1/missing)" = 404
+            - name: Show app logs
+              if: always()
+              run: docker logs app-test
+            - name: Stop app
+              if: always()
+              run: docker rm -f app-test

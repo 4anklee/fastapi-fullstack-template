@@ -1,122 +1,73 @@
-# Handwriting Recognition - Frontend
+# Frontend
 
-The frontend is built with [Vite](https://vitejs.dev/), [React](https://reactjs.org/), [TypeScript](https://www.typescriptlang.org/), [TanStack Query](https://tanstack.com/query), [TanStack Router](https://tanstack.com/router) and [Tailwind CSS](https://tailwindcss.com/).
+React, Vite, TypeScript, TanStack Query and Router, and Tailwind CSS.
+Use Node.js 24 and the pnpm version pinned in the root `package.json`.
 
-## Requirements
+## Development
 
-- [Node.js](https://nodejs.org/)
-- [pnpm](https://pnpm.io/)
-
-## Quick Start
+Start the backend and local database following the [README](../README.md).
+From the repository root:
 
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-* Then open your browser at http://localhost:5173/.
+Open <http://localhost:5173>. Vite proxies `/api` to `http://localhost:8000`.
+For a remote API, set `VITE_API_URL` in `frontend/.env` and configure the API's
+allowed CORS origins accordingly.
 
-Notice that this live server is not running inside Docker, it's for local development, and that is the recommended workflow. Once you are happy with your frontend, you can build the frontend Docker image and start it, to test it in a production-like environment. But building the image at every change will not be as productive as running the local development server with live reload.
+## Production build
 
-Check the file `package.json` to see other available options.
+`backend/Dockerfile` builds the frontend and copies `dist` into the FastAPI
+image. FastAPI serves `/` with SPA navigation fallback alongside `/api/v1`.
+Any Docker-capable host can run this combined image; the API client uses relative URLs.
 
-### Removing the frontend
+To serve a local build, run `pnpm --filter frontend build` from the repository
+root and restart FastAPI. Open <http://localhost:8000>.
+`FRONTEND_DIST_DIR` can override the build directory.
 
-If you are developing an API-only app and want to remove the frontend, you can do it easily:
+## Generate the API client
 
-* Remove the `./frontend` directory.
-
-* In the `compose.yml` file, remove the whole service / section `frontend`.
-
-* In the `compose.override.yml` file, remove the whole service / section `frontend` and `playwright`.
-
-Done, you have a frontend-less (api-only) app. 🤓
-
----
-
-If you want, you can also remove the `FRONTEND` environment variables from:
-
-* `.env`
-* `./scripts/*.sh`
-
-But it would be only to clean them up, leaving them won't really have any effect either way.
-
-## Generate Client
-
-### Automatically
-
-* Activate the backend virtual environment.
-* From the top level project directory, run the script:
+After backend schema changes, run from the repository root:
 
 ```bash
-bash ./scripts/generate-client.sh
+bash scripts/generate-client.sh
 ```
 
-* Commit the changes.
-
-### Manually
-
-* Start the Docker Compose stack.
-
-* Download the OpenAPI JSON file from `http://localhost/api/v1/openapi.json` and copy it to a new file `openapi.json` at the root of the `frontend` directory.
-
-* To generate the frontend client, run:
+Or, with the API running on port 8000:
 
 ```bash
-pnpm generate-client
+pnpm --filter frontend gen:client
 ```
 
-* Commit the changes.
+Commit generated changes in `src/client/` with the corresponding API changes.
 
-Notice that everytime the backend changes (changing the OpenAPI schema), you should follow these steps again to update the frontend client.
+## Code structure
 
-## Using a Remote API
+- `src/assets/`: static assets.
+- `src/client/`: generated API client.
+- `src/components/`: reusable components.
+- `src/hooks/`: custom hooks.
+- `src/routes/`: pages and route definitions.
 
-If you want to use a remote API, you can set the environment variable `VITE_API_URL` to the URL of the remote API. For example, you can set it in the `frontend/.env` file:
+## Browser tests
 
-```env
-VITE_API_URL=https://api.my-domain.example.com
-```
-
-Then, when you run the frontend, it will use that URL as the base URL for the API.
-
-## Code Structure
-
-The frontend code is structured as follows:
-
-* `frontend/src` - The main frontend code.
-* `frontend/src/assets` - Static assets.
-* `frontend/src/client` - The generated OpenAPI client.
-* `frontend/src/components` -  The different components of the frontend.
-* `frontend/src/hooks` - Custom hooks.
-* `frontend/src/routes` - The different routes of the frontend which include the pages.
-
-## End-to-End Testing with Playwright
-
-The frontend includes initial end-to-end tests using Playwright. To run the tests, you need to have the Docker Compose stack running. Start the stack with the following command:
+Start FastAPI in `ENVIRONMENT=local` against a dedicated test database and run
+MailCatcher as described in [development.md](../development.md#browser-tests).
+From the repository root:
 
 ```bash
-docker compose up -d --wait backend
+pnpm --filter frontend exec playwright install chromium
+pnpm test
 ```
 
-Then, you can run the tests with the following command:
+Playwright loads the root `.env` and starts Vite. To test the built SPA served
+by FastAPI instead:
 
 ```bash
-pnpm exec playwright test
+PLAYWRIGHT_BASE_URL=http://localhost:8000 pnpm test
 ```
 
-You can also run your tests in UI mode to see the browser and interact with it running:
-
-```bash
-pnpm exec playwright test --ui
-```
-
-To stop and remove the Docker Compose stack and clean the data created in tests, use the following command:
-
-```bash
-docker compose down -v
-```
-
-To update the tests, navigate to the tests directory and modify the existing test files or add new ones as needed.
-
-For more information on writing and running Playwright tests, refer to the official [Playwright documentation](https://playwright.dev/docs/intro).
+Use `pnpm test:ui` for interactive testing. Run `pnpm lint` for frontend lint
+and formatting checks and fixes.

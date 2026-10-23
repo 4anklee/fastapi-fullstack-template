@@ -1,221 +1,130 @@
-# Handwriting Recognition - Development
+# Local development
 
-## Docker Compose
+Follow the [README](./README.md#local-setup) to install dependencies and create
+`.env`. Run PostgreSQL locally, FastAPI on port 8000, and Vite on port 5173.
+Production uses a [Docker container and Supabase](./deployment.md).
 
-* Start the local stack with Docker Compose:
+## Database
 
-```bash
-docker compose watch
-```
+Set `POSTGRES_SERVER`, `POSTGRES_PORT`, `POSTGRES_USER`, `POSTGRES_PASSWORD`,
+and `POSTGRES_DB` in the root `.env` to match your local database.
 
-* Now you can open your browser and interact with these URLs:
-
-Frontend, built with Docker, with routes handled based on the path: <http://localhost:5173>
-
-Backend, JSON based web API based on OpenAPI: <http://localhost:8000>
-
-Automatic interactive documentation with Swagger UI (from the OpenAPI backend): <http://localhost:8000/docs>
-
-Adminer, database web administration: <http://localhost:8080>
-
-Traefik UI, to see how the routes are being handled by the proxy: <http://localhost:8090>
-
-**Note**: The first time you start your stack, it might take a minute for it to be ready. While the backend waits for the database to be ready and configures everything. You can check the logs to monitor it.
-
-To check the logs, run (in another terminal):
+From `backend/`, initialize the database and run the API:
 
 ```bash
-docker compose logs
+uv run bash scripts/prestart.sh
+uv run fastapi dev app/main.py
 ```
 
-To check the logs of a specific service, add the name of the service, e.g.:
+From the repository root, start Vite:
 
 ```bash
-docker compose logs backend
+pnpm dev
 ```
 
-## Mailcatcher
+Vite proxies `/api` to `http://localhost:8000`. Use the local database for
+development; keep Supabase production credentials in your deployment environment.
 
-Mailcatcher is a simple SMTP server that catches all emails sent by the backend during local development. Instead of sending real emails, they are captured and displayed in a web interface.
+## Local email
 
-This is useful for:
-
-* Testing email functionality during development
-* Verifying email content and formatting
-* Debugging email-related functionality without sending real emails
-
-The backend is automatically configured to use Mailcatcher when running with Docker Compose locally (SMTP on port 1025). All captured emails can be viewed at <http://localhost:1080>.
-
-## Local Development
-
-The Docker Compose files are configured so that each of the services is available in a different port in `localhost`.
-
-For the backend and frontend, they use the same port that would be used by their local development server, so, the backend is at `http://localhost:8000` and the frontend at `http://localhost:5173`.
-
-This way, you could turn off a Docker Compose service and start its local development service, and everything would keep working, because it all uses the same ports.
-
-For example, you can stop that `frontend` service in the Docker Compose, in another terminal, run:
+Password recovery tests need a local SMTP server with MailCatcher's HTTP API.
+If you have Docker installed, run this optional standalone service:
 
 ```bash
-docker compose stop frontend
+docker run --rm --name app-mailcatcher \
+  -p 127.0.0.1:1025:1025 -p 127.0.0.1:1080:1080 schickling/mailcatcher
 ```
 
-And then start the local frontend development server:
+Alternatively, run MailCatcher directly on your machine. The example `.env`
+uses SMTP on port 1025 and `MAILCATCHER_HOST=http://localhost:1080`.
+Open <http://localhost:1080> to inspect emails.
+
+## Backend tests
+
+Create a dedicated test database with your local PostgreSQL tools, for example:
 
 ```bash
-pnpm --filter frontend dev
+createdb app_test
+bash scripts/test.sh
 ```
 
-Or you could stop the `backend` Docker Compose service:
+The test script initializes `app_test` using your configured local connection
+and generates `backend/htmlcov/index.html`. To select a different test database:
 
 ```bash
-docker compose stop backend
+POSTGRES_TEST_DB=my_app_test bash scripts/test.sh
 ```
 
-And then you can run the local development server for the backend:
+For individual tests, from `backend/`:
+
+```bash
+POSTGRES_DB=app_test uv run pytest tests/api/routes/test_users.py -x
+```
+
+## Browser tests
+
+Start MailCatcher, initialize the test database, and run FastAPI against it:
 
 ```bash
 cd backend
-fastapi dev app/main.py
+POSTGRES_DB=app_test uv run bash scripts/prestart.sh
+POSTGRES_DB=app_test uv run fastapi dev app/main.py
 ```
 
-## Docker Compose in `localhost`
-
-When you start the Docker Compose stack, it uses `localhost` by default, with different ports for each service (backend, frontend, adminer, etc).
-
-When you deploy it to production (or staging), it will deploy each service in a different subdomain, like `api.example.com` for the backend and `dashboard.example.com` for the frontend.
-
-In the guide about [deployment](deployment.md) you can read about Traefik, the configured proxy. That's the component in charge of transmitting traffic to each service based on the subdomain.
-
-If you want to test that it's all working locally, you can edit the local `.env` file, and change:
-
-```dotenv
-DOMAIN=localhost
-```
-
-That will be used by the Docker Compose files to configure the base domain for the services.
-
-Traefik will use this to transmit traffic at `api.localhost` to the backend, and traffic at `dashboard.localhost` to the frontend.
-
-The domain `localhost` is a special domain that is configured (with all its subdomains) to point to `127.0.0.1`. This way you can use that for your local development.
-
-After you update it, run again:
+Keep `ENVIRONMENT=local`: the browser fixtures use the private test API.
+In another terminal, from the repository root:
 
 ```bash
-docker compose watch
+pnpm --filter frontend exec playwright install chromium
+pnpm test
 ```
 
-When deploying, for example in production, the main Traefik is configured outside of the Docker Compose files. For local development, there's an included Traefik in `compose.override.yml`, just to let you test that the domains work as expected, for example with `api.localhost` and `dashboard.localhost`.
+Playwright reads the root `.env` for administrator and email settings and starts
+Vite automatically. Environment variables override the file. `pnpm test:ui`
+opens the interactive test runner. Tests create, modify, and delete records in
+the database used by the running backend.
 
-## Docker Compose files and env vars
+## Test the built SPA
 
-There is a main `compose.yml` file with all the configurations that apply to the whole stack, it is used automatically by `docker compose`.
-
-And there's also a `compose.override.yml` with overrides for development, for example to mount the source code as a volume. It is used automatically by `docker compose` to apply overrides on top of `compose.yml`.
-
-These Docker Compose files use the `.env` file containing configurations to be injected as environment variables in the containers.
-
-They also use some additional configurations taken from environment variables set in the scripts before calling the `docker compose` command.
-
-After changing variables, make sure you restart the stack:
+Build the frontend, then restart FastAPI so it registers the frontend routes:
 
 ```bash
-docker compose watch
+pnpm --filter frontend build
+cd backend
+POSTGRES_DB=app_test uv run fastapi run app/main.py
 ```
 
-## The .env file
-
-The `.env` file is the one that contains all your configurations, generated keys and passwords, etc.
-
-Depending on your workflow, you could want to exclude it from Git, for example if your project is public. In that case, you would have to make sure to set up a way for your CI tools to obtain it while building or deploying your project.
-
-One way to do it could be to add each environment variable to your CI/CD system, and updating the `compose.yml` file to read that specific env var instead of reading the `.env` file.
-
-## Pre-commits and code linting
-
-we are using a tool called [prek](https://prek.j178.dev/) (modern alternative to [Pre-commit](https://pre-commit.com/)) for code linting and formatting.
-
-When you install it, it runs right before making a commit in git. This way it ensures that the code is consistent and formatted even before it is committed.
-
-You can find a file `.pre-commit-config.yaml` with configurations at the root of the project.
-
-#### Install prek to run automatically
-
-`prek` is already part of the dependencies of the project.
-
-After having the `prek` tool installed and available, you need to "install" it in the local repository, so that it runs automatically before each commit.
-
-Using `uv`, you could do it with (make sure you are inside `backend` folder):
+Open <http://localhost:8000>. To run browser tests against this combined app,
+from the repository root:
 
 ```bash
-❯ uv run prek install -f
-prek installed at `../.git/hooks/pre-commit`
+PLAYWRIGHT_BASE_URL=http://localhost:8000 pnpm test
 ```
 
-The `-f` flag forces the installation, in case there was already a `pre-commit` hook previously installed.
+`FRONTEND_DIST_DIR` overrides the build directory. Local API development can
+start without a frontend build; staging and production require one.
 
-Now whenever you try to commit, e.g. with:
+To check the production container build locally:
 
 ```bash
-git commit
+docker build -f backend/Dockerfile -t my-app .
 ```
 
-...prek will run and check and format the code you are about to commit, and will ask you to add that code (stage it) with git again before committing.
+## CI
 
-Then you can `git add` the modified/fixed files again and now you can commit.
+Backend and browser jobs use temporary PostgreSQL service containers. The
+browser job builds the SPA and runs it through FastAPI with MailCatcher for
+email tests. The Docker job checks the production image on a custom `PORT`.
+Services and data are discarded with each GitHub Actions runner.
 
-#### Running prek hooks manually
+## API client and formatting
 
-you can also run `prek` manually on all the files, you can do it using `uv` with:
+Regenerate the TypeScript client after changing the API schema:
 
 ```bash
-❯ uv run prek run --all-files
-check for added large files..............................................Passed
-check toml...............................................................Passed
-check yaml...............................................................Passed
-fix end of files.........................................................Passed
-trim trailing whitespace.................................................Passed
-ruff.....................................................................Passed
-ruff-format..............................................................Passed
-biome check..............................................................Passed
+bash scripts/generate-client.sh
 ```
 
-## URLs
-
-The production or staging URLs would use these same paths, but with your own domain.
-
-### Development URLs
-
-Development URLs, for local development.
-
-Frontend: <http://localhost:5173>
-
-Backend: <http://localhost:8000>
-
-Automatic Interactive Docs (Swagger UI): <http://localhost:8000/docs>
-
-Automatic Alternative Docs (ReDoc): <http://localhost:8000/redoc>
-
-Adminer: <http://localhost:8080>
-
-Traefik UI: <http://localhost:8090>
-
-MailCatcher: <http://localhost:1080>
-
-### Development URLs with `localhost` Configured
-
-Development URLs, for local development.
-
-Frontend: <http://dashboard.localhost>
-
-Backend: <http://api.localhost>
-
-Automatic Interactive Docs (Swagger UI): <http://api.localhost/docs>
-
-Automatic Alternative Docs (ReDoc): <http://api.localhost/redoc>
-
-Adminer: <http://localhost:8080>
-
-Traefik UI: <http://localhost:8090>
-
-MailCatcher: <http://localhost:1080>
+Run `pnpm lint` for frontend checks and fixes. Run `uv run bash scripts/lint.sh`
+from `backend/` for ty and Ruff. See [backend/README.md](./backend/README.md)
+for Alembic migrations.

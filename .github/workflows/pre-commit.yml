@@ -43,6 +43,10 @@ jobs:
                   ref: ${{ github.event.pull_request.head.sha }}
                   fetch-depth: 0
                   persist-credentials: false
+            - name: Set up Node.js
+              uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+              with:
+                  node-version: "24"
             - name: Enable pnpm
               run: corepack enable
             - name: Set up Python
@@ -63,6 +67,8 @@ jobs:
               run: uv sync --all-packages
             - name: Install frontend dependencies
               run: pnpm install --frozen-lockfile
+            - name: Configure local settings for OpenAPI generation
+              run: cp .env.example .env
             - name: Run prek - pre-commit
               id: precommit
               run: uv run prek run --from-ref origin/${GITHUB_BASE_REF} --to-ref HEAD --show-diff-on-failure
