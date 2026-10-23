@@ -1,6 +1,9 @@
 [tool.uv.workspace]
 members = ["backend"]
 
+[tool.ty.src]
+exclude = ["backend/app/alembic/**", "backend/tests/**"]
+
 [dependency-groups]
 dev = [
     "zizmor>=1.23.1",
