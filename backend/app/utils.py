@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from email.message import EmailMessage
 from email.utils import formataddr
 from pathlib import Path
@@ -114,7 +114,7 @@ async def generate_new_account_email(
 
 def generate_password_reset_token(email: str) -> str:
     delta = timedelta(hours=settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     expires = now + delta
     exp = expires.timestamp()
     encoded_jwt = jwt.encode(

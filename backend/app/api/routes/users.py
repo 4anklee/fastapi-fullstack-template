@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends
 
 from app.api.deps import (
     CurrentUser,
+    PaginationDep,
     SessionDep,
     get_current_active_superuser,
 )
@@ -12,6 +13,7 @@ from app.models import (
     UpdatePassword,
     User,
     UserCreate,
+    UserPublic,
     UserRegister,
     UsersPublic,
     UserUpdate,
@@ -36,14 +38,18 @@ router = APIRouter(prefix="/users", tags=["users"])
     "/",
     dependencies=[Depends(get_current_active_superuser)],
 )
-async def list(session: SessionDep, skip: int = 0, limit: int = 100) -> UsersPublic:
+async def list(session: SessionDep, pagination: PaginationDep) -> UsersPublic:
     """
     Retrieve users.
     """
-    return await list_users(session=session, skip=skip, limit=limit)
+    return await list_users(
+        session=session, skip=pagination.skip, limit=pagination.limit
+    )
 
 
-@router.post("/", dependencies=[Depends(get_current_active_superuser)])
+@router.post(
+    "/", response_model=UserPublic, dependencies=[Depends(get_current_active_superuser)]
+)
 async def create(*, session: SessionDep, user_in: UserCreate) -> User:
     """
     Create new user.
@@ -51,7 +57,7 @@ async def create(*, session: SessionDep, user_in: UserCreate) -> User:
     return await create_user(session=session, user_in=user_in)
 
 
-@router.patch("/me")
+@router.patch("/me", response_model=UserPublic)
 async def update_me(
     *, session: SessionDep, user_in: UserUpdateMe, current_user: CurrentUser
 ) -> User:
@@ -75,7 +81,7 @@ async def update_me_password(
     )
 
 
-@router.get("/me")
+@router.get("/me", response_model=UserPublic)
 async def read_me(current_user: CurrentUser) -> User:
     """
     Get current user.
@@ -91,7 +97,7 @@ async def delete_me(session: SessionDep, current_user: CurrentUser) -> Message:
     return await delete_current_user(session=session, current_user=current_user)
 
 
-@router.post("/signup")
+@router.post("/signup", response_model=UserPublic)
 async def register(session: SessionDep, user_in: UserRegister) -> User:
     """
     Create new user without the need to be logged in.
@@ -99,7 +105,7 @@ async def register(session: SessionDep, user_in: UserRegister) -> User:
     return await register_user(session=session, user_in=user_in)
 
 
-@router.get("/{user_id}")
+@router.get("/{user_id}", response_model=UserPublic)
 async def read(
     user_id: uuid.UUID, session: SessionDep, current_user: CurrentUser
 ) -> User:
@@ -113,6 +119,7 @@ async def read(
 
 @router.patch(
     "/{user_id}",
+    response_model=UserPublic,
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def update(

@@ -14,7 +14,7 @@ from tests.utils.utils import get_superuser_token_headers
 
 
 @pytest.fixture(scope="session", autouse=True)
-async def db() -> AsyncGenerator[AsyncSession, None]:
+async def db() -> AsyncGenerator[AsyncSession]:
     async with async_session_maker() as session:
         await init_db(session)
         yield session
@@ -29,7 +29,7 @@ def anyio_backend() -> str:
 
 
 @pytest.fixture(scope="module")
-def client() -> Generator[TestClient, None, None]:
+def client() -> Generator[TestClient]:
     with TestClient(app) as c:
         yield c
 

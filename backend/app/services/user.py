@@ -1,7 +1,7 @@
 import uuid
 
 from fastapi import HTTPException
-from pydantic import EmailStr
+from pydantic import MISSING, EmailStr
 from sqlmodel import col, delete, func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -135,7 +135,7 @@ async def create_private_user(
 async def update_current_user(
     *, session: AsyncSession, user_in: UserUpdateMe, current_user: User
 ) -> User:
-    if user_in.email:
+    if user_in.email is not MISSING:
         existing_user = await get_user_by_email(session=session, email=user_in.email)
         if existing_user and existing_user.id != current_user.id:
             raise HTTPException(
@@ -218,7 +218,7 @@ async def update_user(
             detail="The user with this id does not exist in the system",
         )
 
-    if user_in.email:
+    if user_in.email is not MISSING:
         existing_user = await get_user_by_email(session=session, email=user_in.email)
         if existing_user and existing_user.id != user_id:
             raise HTTPException(

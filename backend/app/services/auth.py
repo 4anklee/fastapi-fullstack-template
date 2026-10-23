@@ -54,7 +54,7 @@ async def recover_password(*, session: AsyncSession, email: str) -> Message:
                 subject=email_data.subject,
                 html_content=email_data.html_content,
             )
-        except (SMTPException, OSError, TimeoutError):
+        except SMTPException, OSError, TimeoutError:
             # Keep the public response identical even if email delivery fails.
             logger.exception("Password recovery email delivery failed")
 

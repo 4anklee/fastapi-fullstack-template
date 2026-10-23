@@ -119,6 +119,17 @@ Services and data are discarded with each GitHub Actions runner.
 
 ## API client and formatting
 
+User and item responses use public schemas; database-only fields such as password
+hashes must never be returned. List endpoints accept `skip >= 0` and
+`1 <= limit <= 100` (defaults: `0` and `100`). Update bodies leave omitted fields
+unchanged. Only nullable fields (`full_name` and `description`) accept explicit
+`null`; required values return a validation error instead.
+
+Timestamps use SQLModel's UTC datetime handling. Write timezone-aware values
+(for example, `datetime.now(UTC)`); reads normalize them to UTC. Existing
+`created_at` columns already use PostgreSQL `TIMESTAMP WITH TIME ZONE`, so this
+change needs no schema migration. Legacy null timestamps remain supported.
+
 Regenerate the TypeScript client after changing the API schema:
 
 ```bash

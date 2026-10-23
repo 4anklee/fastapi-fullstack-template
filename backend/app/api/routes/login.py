@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
-from app.models import Message, NewPassword, Token, User
+from app.models import Message, NewPassword, Token, User, UserPublic
 from app.services.auth import (
     create_login_token,
     get_password_recovery_email,
@@ -28,7 +28,7 @@ async def login_access_token(
     )
 
 
-@router.post("/login/test-token")
+@router.post("/login/test-token", response_model=UserPublic)
 async def test_token(current_user: CurrentUser) -> User:
     """
     Test access token

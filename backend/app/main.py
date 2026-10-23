@@ -1,3 +1,6 @@
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+
 import sentry_sdk
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request
 from fastapi.routing import APIRoute
@@ -5,6 +8,15 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.api.main import api_router
 from app.core.config import settings
+from app.core.db import engine
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncGenerator[None]:
+    try:
+        yield
+    finally:
+        await engine.dispose()
 
 
 def custom_generate_unique_id(route: APIRoute) -> str:
@@ -23,6 +35,7 @@ if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
 
 def create_app() -> FastAPI:
     app = FastAPI(
+        lifespan=lifespan,
         title=settings.PROJECT_NAME,
         openapi_url=f"{settings.API_V1_STR}/openapi.json",
         generate_unique_id_function=custom_generate_unique_id,

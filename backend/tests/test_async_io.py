@@ -7,6 +7,7 @@ import pytest
 from app import utils
 from app.core import security
 from app.core.config import settings
+from app.main import create_app, lifespan
 
 pytestmark = pytest.mark.anyio
 
@@ -14,6 +15,21 @@ pytestmark = pytest.mark.anyio
 @pytest.fixture
 def db() -> None:
     """These tests exercise I/O boundaries without a database."""
+
+
+@pytest.mark.parametrize("fail", [False, True])
+async def test_lifespan_disposes_pool_even_on_failure(fail: bool) -> None:
+    with patch(
+        "sqlalchemy.ext.asyncio.AsyncEngine.dispose", new_callable=AsyncMock
+    ) as dispose:
+        try:
+            async with lifespan(create_app()):
+                dispose.assert_not_awaited()
+                if fail:
+                    raise RuntimeError("Shutdown after failure")
+        except RuntimeError:
+            assert fail
+        dispose.assert_awaited_once()
 
 
 async def test_password_work_runs_outside_event_loop() -> None:

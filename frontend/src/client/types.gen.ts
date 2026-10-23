@@ -45,32 +45,6 @@ export type HttpValidationError = {
 };
 
 /**
- * Item
- */
-export type Item = {
-    /**
-     * Title
-     */
-    title: string;
-    /**
-     * Description
-     */
-    description?: string | null;
-    /**
-     * Id
-     */
-    id?: string;
-    /**
-     * Created At
-     */
-    created_at?: string | null;
-    /**
-     * Owner Id
-     */
-    owner_id: string;
-};
-
-/**
  * ItemCreate
  */
 export type ItemCreate = {
@@ -117,7 +91,7 @@ export type ItemUpdate = {
     /**
      * Title
      */
-    title?: string | null;
+    title?: string;
     /**
      * Description
      */
@@ -213,40 +187,6 @@ export type UpdatePassword = {
 };
 
 /**
- * User
- */
-export type User = {
-    /**
-     * Email
-     */
-    email: string;
-    /**
-     * Is Active
-     */
-    is_active?: boolean;
-    /**
-     * Is Superuser
-     */
-    is_superuser?: boolean;
-    /**
-     * Full Name
-     */
-    full_name?: string | null;
-    /**
-     * Id
-     */
-    id?: string;
-    /**
-     * Hashed Password
-     */
-    hashed_password: string;
-    /**
-     * Created At
-     */
-    created_at?: string | null;
-};
-
-/**
  * UserCreate
  */
 export type UserCreate = {
@@ -325,9 +265,17 @@ export type UserRegister = {
  */
 export type UserUpdate = {
     /**
+     * Full Name
+     */
+    full_name?: string | null;
+    /**
      * Email
      */
-    email?: string | null;
+    email?: string;
+    /**
+     * Password
+     */
+    password?: string;
     /**
      * Is Active
      */
@@ -336,14 +284,6 @@ export type UserUpdate = {
      * Is Superuser
      */
     is_superuser?: boolean;
-    /**
-     * Full Name
-     */
-    full_name?: string | null;
-    /**
-     * Password
-     */
-    password?: string | null;
 };
 
 /**
@@ -357,7 +297,7 @@ export type UserUpdateMe = {
     /**
      * Email
      */
-    email?: string | null;
+    email?: string;
 };
 
 /**
@@ -440,7 +380,7 @@ export type LoginTestTokenResponses = {
     /**
      * Successful Response
      */
-    200: User;
+    200: UserPublic;
 };
 
 export type LoginTestTokenResponse =
@@ -585,7 +525,7 @@ export type UsersCreateResponses = {
     /**
      * Successful Response
      */
-    200: User;
+    200: UserPublic;
 };
 
 export type UsersCreateResponse =
@@ -619,7 +559,7 @@ export type UsersReadMeResponses = {
     /**
      * Successful Response
      */
-    200: User;
+    200: UserPublic;
 };
 
 export type UsersReadMeResponse =
@@ -645,7 +585,7 @@ export type UsersUpdateMeResponses = {
     /**
      * Successful Response
      */
-    200: User;
+    200: UserPublic;
 };
 
 export type UsersUpdateMeResponse =
@@ -698,7 +638,7 @@ export type UsersRegisterResponses = {
     /**
      * Successful Response
      */
-    200: User;
+    200: UserPublic;
 };
 
 export type UsersRegisterResponse =
@@ -760,7 +700,7 @@ export type UsersReadResponses = {
     /**
      * Successful Response
      */
-    200: User;
+    200: UserPublic;
 };
 
 export type UsersReadResponse = UsersReadResponses[keyof UsersReadResponses];
@@ -790,7 +730,7 @@ export type UsersUpdateResponses = {
     /**
      * Successful Response
      */
-    200: User;
+    200: UserPublic;
 };
 
 export type UsersUpdateResponse =
@@ -901,7 +841,7 @@ export type ItemsCreateResponses = {
     /**
      * Successful Response
      */
-    200: Item;
+    200: ItemPublic;
 };
 
 export type ItemsCreateResponse =
@@ -963,7 +903,7 @@ export type ItemsReadResponses = {
     /**
      * Successful Response
      */
-    200: Item;
+    200: ItemPublic;
 };
 
 export type ItemsReadResponse = ItemsReadResponses[keyof ItemsReadResponses];
@@ -993,7 +933,7 @@ export type ItemsUpdateResponses = {
     /**
      * Successful Response
      */
-    200: Item;
+    200: ItemPublic;
 };
 
 export type ItemsUpdateResponse =
@@ -1019,7 +959,7 @@ export type PrivateCreateResponses = {
     /**
      * Successful Response
      */
-    200: User;
+    200: UserPublic;
 };
 
 export type PrivateCreateResponse =

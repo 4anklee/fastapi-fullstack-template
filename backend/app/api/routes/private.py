@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from app.api.deps import SessionDep
-from app.models import User
+from app.models import User, UserPublic
 from app.services.user import create_private_user
 
 router = APIRouter(tags=["private"], prefix="/private")
@@ -15,7 +15,7 @@ class PrivateUserCreate(BaseModel):
     is_verified: bool = False
 
 
-@router.post("/users/")
+@router.post("/users/", response_model=UserPublic)
 async def create(user_in: PrivateUserCreate, session: SessionDep) -> User:
     """
     Create a new user.

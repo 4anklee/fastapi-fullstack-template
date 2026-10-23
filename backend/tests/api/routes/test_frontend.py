@@ -16,7 +16,7 @@ def db() -> None:
 @pytest.fixture
 def frontend_client(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> Generator[TestClient, None, None]:
+) -> Generator[TestClient]:
     (tmp_path / "index.html").write_text("<html><body>Test SPA</body></html>")
     (tmp_path / "assets").mkdir()
     (tmp_path / "assets" / "app.js").write_text("console.log('test app');")

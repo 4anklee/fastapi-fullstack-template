@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime
+from pydantic import MISSING
 from sqlmodel import Field, Relationship, SQLModel
 
 from app.models.user import User
@@ -20,17 +20,15 @@ class ItemCreate(ItemBase):
 
 
 # Properties to receive on item update
-class ItemUpdate(ItemBase):
-    title: str | None = Field(default=None, min_length=1, max_length=255)
+class ItemUpdate(SQLModel):
+    title: str | MISSING = Field(default=MISSING, min_length=1, max_length=255)
+    description: str | None = Field(default=None, max_length=255)
 
 
 # Database model, database table inferred from class name
 class Item(ItemBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    created_at: datetime | None = Field(
-        default_factory=get_datetime_utc,
-        sa_type=DateTime(timezone=True),
-    )
+    created_at: datetime | None = Field(default_factory=get_datetime_utc)
     owner_id: uuid.UUID = Field(
         foreign_key="user.id", nullable=False, ondelete="CASCADE"
     )

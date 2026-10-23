@@ -2,8 +2,7 @@ import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from pydantic import EmailStr
-from sqlalchemy import DateTime
+from pydantic import MISSING, EmailStr
 from sqlmodel import Field, Relationship, SQLModel
 
 from app.models.utils import get_datetime_utc
@@ -31,16 +30,16 @@ class UserRegister(SQLModel):
     full_name: str | None = Field(default=None, max_length=255)
 
 
-# Properties to receive via API on update, all are optional
-class UserUpdate(UserBase):
-    # ty: ignore[invalid-attribute-override]
-    email: EmailStr | None = Field(default=None, max_length=255)
-    password: str | None = Field(default=None, min_length=8, max_length=128)
-
-
 class UserUpdateMe(SQLModel):
     full_name: str | None = Field(default=None, max_length=255)
-    email: EmailStr | None = Field(default=None, max_length=255)
+    email: EmailStr | MISSING = Field(default=MISSING, max_length=255)
+
+
+# All fields can be omitted; only full_name can explicitly be cleared with null.
+class UserUpdate(UserUpdateMe):
+    password: str | MISSING = Field(default=MISSING, min_length=8, max_length=128)
+    is_active: bool | MISSING = MISSING
+    is_superuser: bool | MISSING = MISSING
 
 
 class UpdatePassword(SQLModel):
@@ -52,11 +51,8 @@ class UpdatePassword(SQLModel):
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
-    created_at: datetime | None = Field(
-        default_factory=get_datetime_utc,
-        sa_type=DateTime(timezone=True),
-    )
-    items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
+    created_at: datetime | None = Field(default_factory=get_datetime_utc)
+    items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
 
 
 # Properties to return via API, id is always required

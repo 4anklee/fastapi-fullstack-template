@@ -2,8 +2,8 @@ import uuid
 
 from fastapi import APIRouter
 
-from app.api.deps import CurrentUser, SessionDep
-from app.models import Item, ItemCreate, ItemsPublic, ItemUpdate, Message
+from app.api.deps import CurrentUser, PaginationDep, SessionDep
+from app.models import Item, ItemCreate, ItemPublic, ItemsPublic, ItemUpdate, Message
 from app.services.item import (
     create_item,
     delete_item,
@@ -17,17 +17,20 @@ router = APIRouter(prefix="/items", tags=["items"])
 
 @router.get("/")
 async def list(
-    session: SessionDep, current_user: CurrentUser, skip: int = 0, limit: int = 100
+    session: SessionDep, current_user: CurrentUser, pagination: PaginationDep
 ) -> ItemsPublic:
     """
     Retrieve items.
     """
     return await list_items(
-        session=session, current_user=current_user, skip=skip, limit=limit
+        session=session,
+        current_user=current_user,
+        skip=pagination.skip,
+        limit=pagination.limit,
     )
 
 
-@router.get("/{id}")
+@router.get("/{id}", response_model=ItemPublic)
 async def read(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> Item:
     """
     Get item by ID.
@@ -35,7 +38,7 @@ async def read(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) ->
     return await get_item(session=session, current_user=current_user, item_id=id)
 
 
-@router.post("/")
+@router.post("/", response_model=ItemPublic)
 async def create(
     *, session: SessionDep, current_user: CurrentUser, item_in: ItemCreate
 ) -> Item:
@@ -47,7 +50,7 @@ async def create(
     )
 
 
-@router.put("/{id}")
+@router.put("/{id}", response_model=ItemPublic)
 async def update(
     *,
     session: SessionDep,

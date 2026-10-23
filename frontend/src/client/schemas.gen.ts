@@ -71,54 +71,6 @@ export const HTTPValidationErrorSchema = {
     title: "HTTPValidationError",
 } as const;
 
-export const ItemSchema = {
-    properties: {
-        title: {
-            type: "string",
-            maxLength: 255,
-            minLength: 1,
-            title: "Title",
-        },
-        description: {
-            anyOf: [
-                {
-                    type: "string",
-                    maxLength: 255,
-                },
-                {
-                    type: "null",
-                },
-            ],
-            title: "Description",
-        },
-        id: {
-            type: "string",
-            format: "uuid",
-            title: "Id",
-        },
-        created_at: {
-            anyOf: [
-                {
-                    type: "string",
-                    format: "date-time",
-                },
-                {
-                    type: "null",
-                },
-            ],
-            title: "Created At",
-        },
-        owner_id: {
-            type: "string",
-            format: "uuid",
-            title: "Owner Id",
-        },
-    },
-    type: "object",
-    required: ["title", "owner_id"],
-    title: "Item",
-} as const;
-
 export const ItemCreateSchema = {
     properties: {
         title: {
@@ -196,16 +148,9 @@ export const ItemPublicSchema = {
 export const ItemUpdateSchema = {
     properties: {
         title: {
-            anyOf: [
-                {
-                    type: "string",
-                    maxLength: 255,
-                    minLength: 1,
-                },
-                {
-                    type: "null",
-                },
-            ],
+            type: "string",
+            maxLength: 255,
+            minLength: 1,
             title: "Title",
         },
         description: {
@@ -334,63 +279,6 @@ export const UpdatePasswordSchema = {
     type: "object",
     required: ["current_password", "new_password"],
     title: "UpdatePassword",
-} as const;
-
-export const UserSchema = {
-    properties: {
-        email: {
-            type: "string",
-            maxLength: 255,
-            format: "email",
-            title: "Email",
-        },
-        is_active: {
-            type: "boolean",
-            title: "Is Active",
-            default: true,
-        },
-        is_superuser: {
-            type: "boolean",
-            title: "Is Superuser",
-            default: false,
-        },
-        full_name: {
-            anyOf: [
-                {
-                    type: "string",
-                    maxLength: 255,
-                },
-                {
-                    type: "null",
-                },
-            ],
-            title: "Full Name",
-        },
-        id: {
-            type: "string",
-            format: "uuid",
-            title: "Id",
-        },
-        hashed_password: {
-            type: "string",
-            title: "Hashed Password",
-        },
-        created_at: {
-            anyOf: [
-                {
-                    type: "string",
-                    format: "date-time",
-                },
-                {
-                    type: "null",
-                },
-            ],
-            title: "Created At",
-        },
-    },
-    type: "object",
-    required: ["email", "hashed_password"],
-    title: "User",
 } as const;
 
 export const UserCreateSchema = {
@@ -522,29 +410,6 @@ export const UserRegisterSchema = {
 
 export const UserUpdateSchema = {
     properties: {
-        email: {
-            anyOf: [
-                {
-                    type: "string",
-                    maxLength: 255,
-                    format: "email",
-                },
-                {
-                    type: "null",
-                },
-            ],
-            title: "Email",
-        },
-        is_active: {
-            type: "boolean",
-            title: "Is Active",
-            default: true,
-        },
-        is_superuser: {
-            type: "boolean",
-            title: "Is Superuser",
-            default: false,
-        },
         full_name: {
             anyOf: [
                 {
@@ -557,18 +422,25 @@ export const UserUpdateSchema = {
             ],
             title: "Full Name",
         },
+        email: {
+            type: "string",
+            maxLength: 255,
+            format: "email",
+            title: "Email",
+        },
         password: {
-            anyOf: [
-                {
-                    type: "string",
-                    maxLength: 128,
-                    minLength: 8,
-                },
-                {
-                    type: "null",
-                },
-            ],
+            type: "string",
+            maxLength: 128,
+            minLength: 8,
             title: "Password",
+        },
+        is_active: {
+            type: "boolean",
+            title: "Is Active",
+        },
+        is_superuser: {
+            type: "boolean",
+            title: "Is Superuser",
         },
     },
     type: "object",
@@ -590,16 +462,9 @@ export const UserUpdateMeSchema = {
             title: "Full Name",
         },
         email: {
-            anyOf: [
-                {
-                    type: "string",
-                    maxLength: 255,
-                    format: "email",
-                },
-                {
-                    type: "null",
-                },
-            ],
+            type: "string",
+            maxLength: 255,
+            format: "email",
             title: "Email",
         },
     },
